@@ -1,0 +1,213 @@
+.steps {
+  height: 910px;
+  background-color: black;
+  padding: 0 120px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.4s ease-out; /* Ускорили с 0.8s до 0.4s */
+}
+
+.steps.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.steps-container {
+  height: 510px;
+  width: 100%;
+  margin-top: 100px;
+  margin-bottom: 450px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Верхний контейнер */
+.steps-top {
+  height: 160px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 250px;
+}
+
+.steps-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.steps-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  color: white;
+  opacity: 0.7;
+  margin-bottom: 10px;
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: all 0.3s ease-out 0.1s; /* Ускорили и уменьшили задержку */
+}
+
+.steps-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 60px;
+  color: white;
+  line-height: 1.1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.title-line {
+  display: block;
+  letter-spacing: -1px;
+  margin-left: -2px;
+  opacity: 0;
+  transform: translateX(-30px);
+  transition: all 0.3s ease-out; /* Ускорили */
+}
+
+.title-line:first-letter {
+  margin-left: 0;
+}
+
+.title-line:nth-child(1) {
+  transition-delay: 0.2s; /* Уменьшили задержку */
+}
+
+.title-line:nth-child(2) {
+  transition-delay: 0.3s; /* Уменьшили задержку */
+}
+
+.steps-description {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  color: white;
+  opacity: 0.7;
+  width: 470px;
+  height: 90px;
+  text-align: left;
+  margin-top: 0;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all 0.3s ease-out 0.4s; /* Ускорили и уменьшили задержку */
+}
+
+/* Нижний контейнер с шагами */
+.steps-bottom {
+  height: 204px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  flex: 1;
+  max-width: 317px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.3s ease-out; /* Ускорили */
+}
+
+.step-number {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 80px;
+  color: white;
+  line-height: 1;
+  margin-bottom: 45px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.3s ease-out; /* Ускорили */
+}
+
+.step-item:nth-child(2) .step-number {
+  opacity: 0.7;
+}
+
+.step-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 36px;
+  color: white;
+  line-height: 1.2;
+  opacity: 0.7;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease-out; /* Ускорили */
+}
+
+.step-item:nth-child(2) .step-text {
+  opacity: 1;
+}
+
+/* Индивидуальные отступы для каждого шага */
+.step-item:nth-child(1) .step-number {
+  margin-bottom: 45px;
+}
+
+.step-item:nth-child(2) .step-number {
+  margin-bottom: 42px;
+}
+
+.step-item:nth-child(3) .step-number {
+  margin-bottom: 42px;
+}
+
+/* Анимации при появлении */
+.steps.visible .steps-subtitle,
+.steps.visible .title-line,
+.steps.visible .steps-description,
+.steps.visible .step-item,
+.steps.visible .step-number,
+.steps.visible .step-text {
+  opacity: 1;
+  transform: translateX(0) translateY(0) scale(1);
+}
+
+/* Задержки для шагов - значительно уменьшили */
+.steps.visible .step-item:nth-child(1) {
+  transition-delay: 0.5s;
+}
+
+.steps.visible .step-item:nth-child(2) {
+  transition-delay: 0.6s;
+}
+
+.steps.visible .step-item:nth-child(3) {
+  transition-delay: 0.7s;
+}
+
+.steps.visible .step-item:nth-child(1) .step-number {
+  transition-delay: 0.55s;
+}
+
+.steps.visible .step-item:nth-child(2) .step-number {
+  transition-delay: 0.65s;
+}
+
+.steps.visible .step-item:nth-child(3) .step-number {
+  transition-delay: 0.75s;
+}
+
+.steps.visible .step-item:nth-child(1) .step-text {
+  transition-delay: 0.6s;
+}
+
+.steps.visible .step-item:nth-child(2) .step-text {
+  transition-delay: 0.7s;
+}
+
+.steps.visible .step-item:nth-child(3) .step-text {
+  transition-delay: 0.8s;
+}

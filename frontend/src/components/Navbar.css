@@ -1,0 +1,68 @@
+.navbar {
+  background-color: #0F0F0F;
+  padding: 20px 120px 0 120px;
+  position: static; /* Убеждаемся что навбар не фиксированный */
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 30px; /* Оставляем оригинальный размер */
+  color: white;
+}
+
+.logo-low {
+  opacity: 0.7;
+}
+
+.nav-right-section {
+  display: flex;
+  align-items: center;
+  gap: 40px; /* Отступ 40px между навигацией и кнопкой */
+}
+
+.nav-links {
+  display: flex;
+  gap: 40px; /* Отступ 40px между ссылками */
+}
+
+.nav-link {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  color: white;
+  opacity: 0.7;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.nav-link:hover {
+  opacity: 1;
+}
+
+.login-btn {
+  width: 150px;
+  height: 74px;
+  background-color: white; /* Белый фон */
+  border: 2px solid white;
+  border-radius: 8px;
+  color: black; /* Черный текст */
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: #f0f0f0;
+  border-color: #f0f0f0;
+}
