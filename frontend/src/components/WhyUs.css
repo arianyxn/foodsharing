@@ -45,7 +45,7 @@
   font-weight: 500;
   font-size: 24px;
   color: white;
-  opacity: 0.7;
+  opacity: 0.7; /* 70% прозрачность */
   margin-bottom: 10px;
   opacity: 0;
   transform: translateY(20px);
@@ -70,7 +70,7 @@
   font-weight: 600;
   font-size: 24px;
   color: white;
-  opacity: 0.7;
+  opacity: 0.7; /* 70% прозрачность */
   width: 688px;
   height: 60px;
   margin: 0;
@@ -81,14 +81,22 @@
 }
 
 /* Анимации при появлении */
-.why-us.visible .why-us-subtitle,
-.why-us.visible .why-us-title,
-.why-us.visible .why-us-description {
-  opacity: 1;
+.why-us.visible .why-us-subtitle {
+  opacity: 0.7; /* Возвращаем 70% прозрачность */
   transform: translateY(0);
 }
 
-/* Нижний контейнер с бегущей строкой */
+.why-us.visible .why-us-title {
+  opacity: 1; /* Заголовок без прозрачности */
+  transform: translateY(0);
+}
+
+.why-us.visible .why-us-description {
+  opacity: 0.7; /* Возвращаем 70% прозрачность */
+  transform: translateY(0);
+}
+
+/* Остальной CSS остается без изменений */
 .why-us-bottom {
   height: 160px;
   width: 100%;
@@ -96,7 +104,6 @@
   position: relative;
 }
 
-/* Градиентные блюры по краям */
 .fade-left {
   position: absolute;
   left: 0;

@@ -94,7 +94,7 @@
   font-weight: 500;
   font-size: 24px;
   color: white;
-  opacity: 0.7;
+  opacity: 0.7; /* 70% прозрачность */
   margin-bottom: 10px;
   opacity: 0;
   transform: translateY(20px);
@@ -126,7 +126,7 @@
   font-size: 24px;
   cursor: pointer;
   transition: all 0.3s ease;
-  opacity: 0.7;
+  opacity: 0.7; /* 70% прозрачность */
   opacity: 0;
   transform: translateY(20px);
   transition: all 0.5s ease-out 0.6s;
@@ -140,9 +140,17 @@
 }
 
 /* Анимации при появлении */
-.contact.visible .contact-subtitle,
-.contact.visible .contact-title,
+.contact.visible .contact-subtitle {
+  opacity: 0.7; /* Возвращаем 70% прозрачность */
+  transform: translateY(0);
+}
+
+.contact.visible .contact-title {
+  opacity: 1; /* Заголовок без прозрачности */
+  transform: translateY(0);
+}
+
 .contact.visible .contact-button {
-  opacity: 1;
+  opacity: 0.7; /* Возвращаем 70% прозрачность */
   transform: translateY(0);
 }

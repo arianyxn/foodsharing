@@ -29,7 +29,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className={`footer ${isVisible ? 'visible' : ''}`} ref={sectionRef}>
+    <footer className={`footer ${isVisible ? 'visible' : ''}`} ref={sectionRef} id="footer">
       {/* Логотип */}
       <div className="footer-logo">LOWLOW</div>
       
