@@ -51,13 +51,13 @@ const MiniCatalog = () => {
         {/* Верхний контейнер */}
         <div className="catalog-top">
           <div className="catalog-header">
-            <div className="catalog-subtitle">/КАТАЛОГ</div>
+            <div className="catalog-subtitle">/новости мира</div>
             <h1 className="catalog-title">
-              ВЫБИРАЙТЕ ПО<br />КАТАЛОГУ
+              Что происходит в мире<br />фудшеринга
             </h1>
           </div>
           <button className="catalog-button">
-            К КАТАЛОГУ
+            к новостям
           </button>
         </div>
 

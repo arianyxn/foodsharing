@@ -55,7 +55,7 @@ const WhyUs = () => {
         {/* Верхний контейнер */}
         <div className="why-us-top">
           <div className="why-us-header">
-            <div className="why-us-subtitle">/ПОЧЕМУ ВЫБИРАЮТ НАС</div>
+            <div className="why-us-subtitle">/почему выбирают нас</div>
             <h2 className="why-us-title">ПРОВЕРЕННЫЕ ЗАВЕДЕНИЯ</h2>
             <p className="why-us-description">
               Все заведения проверенные и каждая еда, закуски продаются по доступным ценам.

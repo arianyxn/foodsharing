@@ -1,7 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Navbar.css';
 
 const Navbar = () => {
+  const navigate = useNavigate();
+
   const scrollToFooter = () => {
     const footer = document.getElementById('footer');
     if (footer) {
@@ -20,6 +23,10 @@ const Navbar = () => {
         block: 'start'
       });
     }
+  };
+
+  const handleLoginClick = () => {
+    navigate('/login');
   };
 
   return (
@@ -47,7 +54,7 @@ const Navbar = () => {
             }}>Контакты</a>
           </div>
           
-          <button className="login-btn">Войти</button>
+          <button className="login-btn" onClick={handleLoginClick}>Войти</button>
         </div>
       </div>
     </nav>

@@ -40,10 +40,10 @@ const Contact = () => {
       </div>
       <div className="contact-container">
         <div className="contact-content">
-          <div className="contact-subtitle">/СВЯЖИТЕСЬ С НАМИ</div>
+          <div className="contact-subtitle">/свяжитесь с нами</div>
           <h2 className="contact-title">ОТКРОЙТЕ ВОЗМОЖНОСТИ ПАРТНЕРСТВА</h2>
           <button className="contact-button" onClick={handleSendRequest}>
-            ОПРАВИТЬ ЗАПРОС
+            отправить запрос
           </button>
         </div>
       </div>

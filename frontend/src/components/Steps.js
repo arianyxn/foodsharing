@@ -34,10 +34,10 @@ const Steps = () => {
         {/* Верхний контейнер */}
         <div className="steps-top">
           <div className="steps-header">
-            <div className="steps-subtitle">/ШАГИ</div>
+            <div className="steps-subtitle">/наша цель</div>
             <div className="steps-title">
-              <span className="title-line">С ЧЕГО</span>
-              <span className="title-line">НАЧАТЬ?</span>
+              <span className="title-line">Совместное</span>
+              <span className="title-line">использование еды</span>
             </div>
           </div>
           <div className="steps-description">
@@ -49,17 +49,17 @@ const Steps = () => {
         <div className="steps-bottom">
           <div className="step-item">
             <div className="step-number">1</div>
-            <div className="step-text">Выберите свое<br />местоположение</div>
+            <div className="step-text">Доступность еды для всех</div>
           </div>
           
           <div className="step-item">
             <div className="step-number">2</div>
-            <div className="step-text">Сделайте заказ<br />понравившихся блюд</div>
+            <div className="step-text">Повышение социальной ответственности</div>
           </div>
           
           <div className="step-item">
             <div className="step-number">3</div>
-            <div className="step-text">Заберите заказ<br />в ближайшем кафе</div>
+            <div className="step-text">Снижение излишков еды</div>
           </div>
         </div>
       </div>
