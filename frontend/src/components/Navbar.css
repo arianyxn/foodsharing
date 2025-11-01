@@ -1,7 +1,7 @@
 .navbar {
   background-color: #0F0F0F;
   padding: 20px 120px 0 120px;
-  position: static; /* Убеждаемся что навбар не фиксированный */
+  position: static;
 }
 
 .navbar-container {
@@ -15,7 +15,7 @@
 .logo {
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  font-size: 30px; /* Оставляем оригинальный размер */
+  font-size: 30px;
   color: white;
 }
 
@@ -26,12 +26,12 @@
 .nav-right-section {
   display: flex;
   align-items: center;
-  gap: 40px; /* Отступ 40px между навигацией и кнопкой */
+  gap: 40px;
 }
 
 .nav-links {
   display: flex;
-  gap: 40px; /* Отступ 40px между ссылками */
+  gap: 40px;
 }
 
 .nav-link {
@@ -51,10 +51,10 @@
 .login-btn {
   width: 150px;
   height: 74px;
-  background-color: white; /* Белый фон */
+  background-color: white;
   border: 2px solid white;
   border-radius: 8px;
-  color: black; /* Черный текст */
+  color: black;
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
   font-size: 24px;
@@ -65,4 +65,76 @@
 .login-btn:hover {
   background-color: #f0f0f0;
   border-color: #f0f0f0;
+}
+
+/* Стили для профиля пользователя */
+.user-profile {
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.user-info:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.user-greeting {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.welcome-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.2;
+}
+
+.username {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  color: white;
+  line-height: 1.2;
 }

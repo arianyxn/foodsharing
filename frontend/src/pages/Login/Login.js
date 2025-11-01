@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './Login.css';
 
 // Импортируем изображения
@@ -17,6 +18,8 @@ const Login = () => {
   });
 
   const [currentImage, setCurrentImage] = useState(0);
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const images = [food1, food2, food3, food4, food5];
 
@@ -39,7 +42,12 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    const user = login(formData.email, formData.password);
+    if (user) {
+      navigate('/'); // Возвращаем на главную после успешного входа
+    } else {
+      alert('Неверный email или пароль');
+    }
   };
 
   const handleIndicatorClick = (index) => {
@@ -51,7 +59,9 @@ const Login = () => {
       {/* Контейнер формы */}
       <div className="form-container">
         <h1 className="login-title">Войти</h1>
-     
+        <p className="login-subtitle">
+          Войдите, чтобы получить доступ к своей учетной записи
+        </p>
         
         <form onSubmit={handleSubmit} className="login-form">
           <div className="input-group">

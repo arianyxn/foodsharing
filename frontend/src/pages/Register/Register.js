@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './Register.css';
 
 // Импортируем изображения
@@ -19,6 +20,8 @@ const Register = () => {
   });
 
   const [currentImage, setCurrentImage] = useState(0);
+  const { register } = useAuth();
+  const navigate = useNavigate();
 
   const images = [food1, food2, food3, food4, food5];
 
@@ -41,7 +44,34 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formData);
+    
+    if (formData.password !== formData.confirmPassword) {
+      alert('Пароли не совпадают');
+      return;
+    }
+    
+    if (!formData.agreeTerms) {
+      alert('Необходимо согласиться с условиями');
+      return;
+    }
+
+    // Проверяем, нет ли уже пользователя с таким email
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    const existingUser = users.find(user => user.email === formData.email);
+    if (existingUser) {
+      alert('Пользователь с таким email уже существует');
+      return;
+    }
+
+    const user = register({
+      nickname: formData.nickname,
+      email: formData.email,
+      password: formData.password
+    });
+
+    if (user) {
+      navigate('/'); // Возвращаем на главную после успешной регистрации
+    }
   };
 
   const handleIndicatorClick = (index) => {
@@ -79,7 +109,7 @@ const Register = () => {
       <div className="form-container">
         <h1 className="register-title">Добро пожаловать</h1>
         <p className="register-subtitle">
-          LOWLOW - платформа, который спасает продукты перед сроком, продавая их дешевле
+          LOW.LOW - платформа, который спасает продукты перед сроком, продавая их дешевле
         </p>
         
         <form onSubmit={handleSubmit} className="register-form">

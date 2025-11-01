@@ -11,42 +11,55 @@ import FAQ from './components/FAQ';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import Login from './pages/Login/Login';
-import Register from './pages/Register/Register'; // Добавляем импорт регистрации
+import Register from './pages/Register/Register';
+import Account from './pages/Account/Account';
+import { AuthProvider } from './context/AuthContext';
 
 function App() {
   return (
-    <BrowserRouter>
-      <div className="App">
-        <Routes>
-          {/* Главная страница с навбаром и футером */}
-          <Route path="/" element={
-            <>
-              <Navbar />
-              <div id="main">
-                <Hero />
-              </div>
-              <div id="about">
-                <Steps />
-              </div>
-              <WhyUs />
-              <Quotes />
-              <div id="catalog">
-                <MiniCatalog />
-              </div>
-              <FAQ />
-              <Contact />
-              <Footer />
-            </>
-          } />
-          
-          {/* Страница логина БЕЗ навбара и футера */}
-          <Route path="/login" element={<Login />} />
-          
-          {/* Страница регистрации БЕЗ навбара и футера */}
-          <Route path="/register" element={<Register />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <div className="App">
+          <Routes>
+            {/* Главная страница с навбаром и футером */}
+            <Route path="/" element={
+              <>
+                <Navbar />
+                <div id="main">
+                  <Hero />
+                </div>
+                <div id="about">
+                  <Steps />
+                </div>
+                <WhyUs />
+                <Quotes />
+                <div id="catalog">
+                  <MiniCatalog />
+                </div>
+                <FAQ />
+                <Contact />
+                <Footer />
+              </>
+            } />
+            
+            {/* Страница логина БЕЗ навбара и футера */}
+            <Route path="/login" element={<Login />} />
+            
+            {/* Страница регистрации БЕЗ навбара и футера */}
+            <Route path="/register" element={<Register />} />
+            
+            {/* Страница личного кабинета С навбаром и футером */}
+            <Route path="/account" element={
+              <>
+                <Navbar />
+                <Account />
+                <Footer />
+              </>
+            } />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
