@@ -13,7 +13,7 @@ const AccountProfile = ({
   onCancel,
   fileInputRef 
 }) => {
-  const cities = ['Алматы', 'Астана', 'Шымкент'];
+  const cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Тараз', 'Павлодар', 'Усть-Каменогорск', 'Семей'];
 
   return (
     <div className="account-section">
@@ -125,18 +125,7 @@ const AccountProfile = ({
           </select>
         </div>
         
-        <div className="form-group full-width">
-          <label className="form-label">Адрес *</label>
-          <input
-            type="text"
-            name="address"
-            value={userData.address}
-            onChange={onInputChange}
-            className="form-input"
-            placeholder="Введите ваш адрес"
-            disabled={!isEditing}
-          />
-        </div>
+        {/* Убрано поле адреса */}
       </div>
       
       {isEditing && (

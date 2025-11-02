@@ -28,6 +28,44 @@ const Footer = () => {
     };
   }, []);
 
+  const scrollToSection = (sectionId) => {
+    if (window.location.pathname !== '/') {
+      window.location.href = '/';
+      setTimeout(() => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+          section.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 100);
+    } else {
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }
+  };
+
+  const handleNewsClick = (e) => {
+    e.preventDefault();
+    scrollToSection('catalog');
+  };
+
+  const handleCatalogClick = (e) => {
+    e.preventDefault();
+    window.location.href = '/restaurants';
+  };
+
+  const handleWhyUsClick = (e) => {
+    e.preventDefault();
+    scrollToSection('whyus');
+  };
+
   return (
     <footer className={`footer ${isVisible ? 'visible' : ''}`} ref={sectionRef} id="footer">
       {/* Логотип */}
@@ -46,9 +84,9 @@ const Footer = () => {
         <div className="footer-center">
           <div className="footer-nav-title">НАВИГАЦИЯ</div>
           <nav className="footer-nav">
-            <a href="#about" className="footer-nav-link">О нас</a>
-            <a href="#partners" className="footer-nav-link">Партнеры</a>
-            <a href="#catalog" className="footer-nav-link">Каталог</a>
+            <a href="#catalog" className="footer-nav-link" onClick={handleNewsClick}>Новости</a>
+            <a href="#whyus" className="footer-nav-link" onClick={handleWhyUsClick}>Партнеры</a>
+            <a href="/restaurants" className="footer-nav-link" onClick={handleCatalogClick}>Каталог</a>
           </nav>
         </div>
         

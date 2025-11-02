@@ -9,10 +9,8 @@ const Navbar = () => {
   const { user, logout } = useAuth();
 
   const scrollToFooter = () => {
-    // Если мы не на главной странице, сначала переходим на главную
     if (location.pathname !== '/') {
       navigate('/');
-      // Даем время для загрузки главной страницы перед скроллом
       setTimeout(() => {
         const footer = document.getElementById('footer');
         if (footer) {
@@ -34,10 +32,8 @@ const Navbar = () => {
   };
 
   const scrollToSection = (sectionId) => {
-    // Если мы не на главной странице, сначала переходим на главную
     if (location.pathname !== '/') {
       navigate('/');
-      // Даем время для загрузки главной страницы перед скроллом
       setTimeout(() => {
         const section = document.getElementById(sectionId);
         if (section) {
@@ -63,15 +59,48 @@ const Navbar = () => {
   };
 
   const handleProfileClick = () => {
-    navigate('/account');
+    // Редирект в зависимости от роли пользователя
+    if (user?.role === 'business') {
+      navigate('/business-account');
+    } else {
+      navigate('/account');
+    }
   };
 
   const handleLogoClick = () => {
     if (location.pathname !== '/') {
       navigate('/');
     } else {
-      // Если уже на главной, скроллим наверх
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleCatalogClick = (e) => {
+    e.preventDefault();
+    navigate('/restaurants');
+  };
+
+  const handleNewsClick = (e) => {
+    e.preventDefault();
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        const newsSection = document.getElementById('catalog');
+        if (newsSection) {
+          newsSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        }
+      }, 100);
+    } else {
+      const newsSection = document.getElementById('catalog');
+      if (newsSection) {
+        newsSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
     }
   };
 
@@ -92,14 +121,8 @@ const Navbar = () => {
                 scrollToSection('main');
               }
             }}>Главная</a>
-            <a href="#about" className="nav-link" onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('about');
-            }}>О нас</a>
-            <a href="#catalog" className="nav-link" onClick={(e) => {
-              e.preventDefault();
-              scrollToSection('catalog');
-            }}>Каталог</a>
+            <a href="#catalog" className="nav-link" onClick={handleNewsClick}>Новости</a>
+            <a href="/restaurants" className="nav-link" onClick={handleCatalogClick}>Каталог</a>
             <a href="#contacts" className="nav-link" onClick={(e) => {
               e.preventDefault();
               scrollToFooter();
@@ -114,16 +137,19 @@ const Navbar = () => {
                     <img src={user.avatar} alt="Avatar" />
                   ) : (
                     <div className="avatar-placeholder">
-                      {user.firstName ? user.firstName.charAt(0).toUpperCase() : 
+                      {user.companyName ? user.companyName.charAt(0).toUpperCase() : 
+                       user.firstName ? user.firstName.charAt(0).toUpperCase() : 
                        user.nickname ? user.nickname.charAt(0).toUpperCase() : 
                        user.email ? user.email.charAt(0).toUpperCase() : 'U'}
                     </div>
                   )}
                 </div>
                 <div className="user-greeting">
-                  <span className="welcome-text">С возвращением</span>
+                  <span className="welcome-text">
+                    {user.role === 'business' ? 'Бизнес-аккаунт' : 'С возвращением'}
+                  </span>
                   <span className="username">
-                    {user.firstName || user.nickname || user.email}
+                    {user.companyName || user.firstName || user.nickname || user.email}
                   </span>
                 </div>
               </div>

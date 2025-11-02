@@ -14,9 +14,52 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
 
+  // Готовая компания для демонстрации
+// В defaultCompany добавьте:
+const defaultCompany = {
+  id: 1,
+  email: 'okadzaki@example.com',
+  password: 'okadzaki123',
+  role: 'business',
+  companyName: 'Okadzaki Sushi',
+  bin: '123456789012',
+  directorFirstName: 'Айгерім',
+  directorLastName: 'Қасенова',
+  phone: '+7 (777) 123-45-67',
+  city: 'Алматы',
+  openingTime: '09:00',
+  closingTime: '23:00',
+  avatar: null,
+  createdAt: new Date().toISOString()
+};
+
+  // Функция для инициализации демо-данных
+  const initializeDemoData = () => {
+    const savedUsers = localStorage.getItem('users');
+    
+    if (!savedUsers) {
+      // Если нет пользователей, создаем демо компанию
+      const initialUsers = [defaultCompany];
+      setUsers(initialUsers);
+      localStorage.setItem('users', JSON.stringify(initialUsers));
+      console.log('Демо компания создана:', defaultCompany.email);
+    } else {
+      const parsedUsers = JSON.parse(savedUsers);
+      setUsers(parsedUsers);
+      
+      // Проверяем, есть ли демо компания
+      const hasDemoCompany = parsedUsers.some(u => u.email === defaultCompany.email);
+      if (!hasDemoCompany) {
+        const updatedUsers = [...parsedUsers, defaultCompany];
+        setUsers(updatedUsers);
+        localStorage.setItem('users', JSON.stringify(updatedUsers));
+        console.log('Демо компания добавлена');
+      }
+    }
+  };
+
   // Функция для обновления данных пользователя
   const updateUser = (updatedUserData) => {
-    // Не сохраняем avatar в localStorage если это base64 (слишком большой)
     const userForStorage = {
       ...updatedUserData,
       avatar: updatedUserData.avatar && updatedUserData.avatar.startsWith('data:image') 
@@ -25,18 +68,14 @@ export const AuthProvider = ({ children }) => {
     };
     
     setUser(updatedUserData);
-    
-    // Обновляем в localStorage (без большого avatar)
     localStorage.setItem('currentUser', JSON.stringify(userForStorage));
     
-    // Обновляем в списке пользователей (тоже без большого avatar)
     setUsers(prevUsers => 
       prevUsers.map(u => 
         u.id === updatedUserData.id ? userForStorage : u
       )
     );
     
-    // Обновляем users в localStorage (без больших avatar)
     const updatedUsers = users.map(u => 
       u.id === updatedUserData.id ? userForStorage : u
     );
@@ -45,16 +84,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('users', JSON.stringify(updatedUsers));
     } catch (error) {
       console.warn('Не удалось сохранить users в localStorage:', error);
-      // Если не помещается, сохраняем только основные данные
-      const minimalUsers = updatedUsers.map(u => ({
-        id: u.id,
-        email: u.email,
-        firstName: u.firstName,
-        nickname: u.nickname,
-        role: u.role,
-        createdAt: u.createdAt
-      }));
-      localStorage.setItem('users', JSON.stringify(minimalUsers));
     }
   };
 
@@ -62,7 +91,7 @@ export const AuthProvider = ({ children }) => {
     const newUser = {
       id: Date.now(),
       ...userData,
-      role: 'customer',
+      role: userData.role || 'customer',
       avatar: null,
       createdAt: new Date().toISOString()
     };
@@ -70,24 +99,22 @@ export const AuthProvider = ({ children }) => {
     setUsers(prev => [...prev, newUser]);
     setUser(newUser);
     
-    // Сохраняем без avatar
     const userForStorage = { ...newUser, avatar: null };
     localStorage.setItem('currentUser', JSON.stringify(userForStorage));
-    
-    try {
-      localStorage.setItem('users', JSON.stringify([...users, userForStorage]));
-    } catch (error) {
-      console.warn('Не удалось сохранить users в localStorage:', error);
-    }
+    localStorage.setItem('users', JSON.stringify([...users, userForStorage]));
     
     return newUser;
   };
 
   const login = (email, password) => {
+    console.log('Попытка входа:', email);
+    console.log('Доступные пользователи:', users);
+    
     const foundUser = users.find(u => u.email === email && u.password === password);
+    
     if (foundUser) {
+      console.log('Пользователь найден:', foundUser);
       setUser(foundUser);
-      // Сохраняем без большого avatar
       const userForStorage = {
         ...foundUser,
         avatar: foundUser.avatar && foundUser.avatar.startsWith('data:image') 
@@ -96,8 +123,10 @@ export const AuthProvider = ({ children }) => {
       };
       localStorage.setItem('currentUser', JSON.stringify(userForStorage));
       return foundUser;
+    } else {
+      console.log('Пользователь не найден или неверный пароль');
+      return null;
     }
-    return null;
   };
 
   const logout = () => {
@@ -106,14 +135,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('currentUser');
-    const savedUsers = localStorage.getItem('users');
+    // Инициализируем демо-данные
+    initializeDemoData();
     
+    // Загружаем текущего пользователя
+    const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
-    }
-    if (savedUsers) {
-      setUsers(JSON.parse(savedUsers));
     }
   }, []);
 

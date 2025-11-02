@@ -13,7 +13,9 @@ import Footer from './components/Footer';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import Account from './pages/Account/Account';
-import AllNews from './pages/AllNews/AllNews'; // Добавьте этот импорт
+import BusinessAccount from './pages/BusinessAccount/BusinessAccount'; // Добавляем импорт
+import AllNews from './pages/AllNews/AllNews';
+import Restaurants from './pages/Restaurants/Restaurants';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -32,13 +34,24 @@ function App() {
                 <div id="about">
                   <Goal />
                 </div>
-                <WhyUs />
+                <div id="whyus">
+                  <WhyUs />
+                </div>
                 <Quotes />
                 <div id="catalog">
                   <News /> 
                 </div>
                 <FAQ />
                 <Contact />
+                <Footer />
+              </>
+            } />
+            
+            {/* Страница каталога ресторанов */}
+            <Route path="/restaurants" element={
+              <>
+                <Navbar />
+                <Restaurants />
                 <Footer />
               </>
             } />
@@ -58,11 +71,20 @@ function App() {
             {/* Страница регистрации БЕЗ навбара и футера */}
             <Route path="/register" element={<Register />} />
             
-            {/* Страница личного кабинета С навбаром и футером */}
+            {/* Страница личного кабинета покупателя */}
             <Route path="/account" element={
               <>
                 <Navbar />
                 <Account />
+                <Footer />
+              </>
+            } />
+            
+            {/* Страница бизнес-аккаунта */}
+            <Route path="/business-account" element={
+              <>
+                <Navbar />
+                <BusinessAccount />
                 <Footer />
               </>
             } />
