@@ -1,0 +1,48 @@
+.orders-list {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 60px 40px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.empty-orders {
+  font-family: 'Poppins', sans-serif;
+}
+
+.orders-icon {
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-orders h3 {
+  font-weight: 500;
+  font-size: 20px;
+  margin-bottom: 8px;
+  color: white;
+  opacity: 0.9;
+}
+
+.empty-orders p {
+  font-weight: 400;
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 24px;
+}
+
+.browse-products-btn {
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.browse-products-btn:hover {
+  background: #f0f0f0;
+}
