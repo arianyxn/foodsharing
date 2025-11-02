@@ -31,7 +31,10 @@ const BusinessAccount = () => {
     city: '',
     email: '',
     bin: '',
-    companyName: ''
+    companyName: '',
+    avatar: '', // ДОБАВЛЕНО поле для аватара
+    openingTime: '09:00',
+    closingTime: '18:00'
   });
 
   // Загрузка данных при монтировании
@@ -45,7 +48,10 @@ const BusinessAccount = () => {
         phone: user.phone || '',
         city: user.city || '',
         bin: user.bin || '',
-        companyName: user.companyName || ''
+        companyName: user.companyName || '',
+        avatar: user.avatar || '', // ДОБАВЛЕНО загрузка аватара
+        openingTime: user.openingTime || '09:00',
+        closingTime: user.closingTime || '18:00'
       }));
       
       const hasBasicInfo = user.directorFirstName && user.email && user.bin && user.companyName;
@@ -114,12 +120,13 @@ const BusinessAccount = () => {
           
           const compressedAvatarUrl = canvas.toDataURL('image/jpeg', 0.7);
           
-          const updatedUser = {
-            ...user,
+          // Сохраняем аватар в companyData
+          setCompanyData(prev => ({
+            ...prev,
             avatar: compressedAvatarUrl
-          };
-          
-          updateUser(updatedUser);
+          }));
+
+          console.log('Аватар загружен и сжат:', compressedAvatarUrl.substring(0, 100) + '...');
         };
         img.src = e.target.result;
       };
@@ -128,14 +135,27 @@ const BusinessAccount = () => {
   };
 
   const handleSave = () => {
+    console.log('Сохранение данных компании:', companyData);
+    
+    // Валидация обязательных полей
+    if (!companyData.companyName || !companyData.bin || !companyData.directorFirstName || 
+        !companyData.email || !companyData.phone || !companyData.city) {
+      alert('Пожалуйста, заполните все обязательные поля (отмечены *)');
+      return;
+    }
+
     const updatedUser = {
       ...user,
       ...companyData
     };
     
+    console.log('Обновленный пользователь для сохранения:', updatedUser);
+    
     updateUser(updatedUser);
     setShowNotification(false);
     setIsEditing(false);
+    
+    alert('Данные успешно сохранены!');
   };
 
   const handleCancel = () => {
@@ -147,7 +167,10 @@ const BusinessAccount = () => {
         city: user.city || '',
         email: user.email || '',
         bin: user.bin || '',
-        companyName: user.companyName || ''
+        companyName: user.companyName || '',
+        avatar: user.avatar || '', // ДОБАВЛЕНО восстановление аватара
+        openingTime: user.openingTime || '09:00',
+        closingTime: user.closingTime || '18:00'
       });
     }
     setIsEditing(false);

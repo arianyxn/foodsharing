@@ -15,23 +15,22 @@ export const AuthProvider = ({ children }) => {
   const [users, setUsers] = useState([]);
 
   // Готовая компания для демонстрации
-// В defaultCompany добавьте:
-const defaultCompany = {
-  id: 1,
-  email: 'okadzaki@example.com',
-  password: 'okadzaki123',
-  role: 'business',
-  companyName: 'Okadzaki Sushi',
-  bin: '123456789012',
-  directorFirstName: 'Айгерім',
-  directorLastName: 'Қасенова',
-  phone: '+7 (777) 123-45-67',
-  city: 'Алматы',
-  openingTime: '09:00',
-  closingTime: '23:00',
-  avatar: null,
-  createdAt: new Date().toISOString()
-};
+  const defaultCompany = {
+    id: 1,
+    email: 'okadzaki@example.com',
+    password: 'okadzaki123',
+    role: 'business',
+    companyName: 'Okadzaki Sushi',
+    bin: '123456789012',
+    directorFirstName: 'Айгерім',
+    directorLastName: 'Қасенова',
+    phone: '+7 (777) 123-45-67',
+    city: 'Алматы',
+    openingTime: '09:00',
+    closingTime: '23:00',
+    avatar: null,
+    createdAt: new Date().toISOString()
+  };
 
   // Функция для инициализации демо-данных
   const initializeDemoData = () => {
@@ -58,33 +57,48 @@ const defaultCompany = {
     }
   };
 
-  // Функция для обновления данных пользователя
+  // Функция для обновления данных пользователя (ИСПРАВЛЕННАЯ)
   const updateUser = (updatedUserData) => {
-    const userForStorage = {
-      ...updatedUserData,
-      avatar: updatedUserData.avatar && updatedUserData.avatar.startsWith('data:image') 
-        ? null 
-        : updatedUserData.avatar
-    };
+    console.log('Обновление пользователя:', updatedUserData);
     
+    // Сохраняем пользователя в состоянии
     setUser(updatedUserData);
-    localStorage.setItem('currentUser', JSON.stringify(userForStorage));
     
-    setUsers(prevUsers => 
-      prevUsers.map(u => 
-        u.id === updatedUserData.id ? userForStorage : u
-      )
-    );
-    
-    const updatedUsers = users.map(u => 
-      u.id === updatedUserData.id ? userForStorage : u
-    );
-    
+    // Сохраняем в localStorage
     try {
-      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
+      console.log('Пользователь сохранен в currentUser');
     } catch (error) {
-      console.warn('Не удалось сохранить users в localStorage:', error);
+      console.warn('Не удалось сохранить currentUser в localStorage:', error);
+      // Если ошибка из-за размера, сохраняем без avatar
+      const userWithoutAvatar = { ...updatedUserData, avatar: null };
+      localStorage.setItem('currentUser', JSON.stringify(userWithoutAvatar));
     }
+    
+    // Обновляем в списке пользователей
+    setUsers(prevUsers => {
+      const updatedUsers = prevUsers.map(u => 
+        u.id === updatedUserData.id ? updatedUserData : u
+      );
+      
+      // Сохраняем обновленный список пользователей
+      try {
+        localStorage.setItem('users', JSON.stringify(updatedUsers));
+        console.log('Список пользователей обновлен');
+      } catch (error) {
+        console.warn('Не удалось сохранить users в localStorage:', error);
+        // Если ошибка из-за размера, сохраняем без avatar
+        const usersWithoutAvatars = updatedUsers.map(u => ({
+          ...u,
+          avatar: u.avatar && u.avatar.startsWith('data:image') ? null : u.avatar
+        }));
+        localStorage.setItem('users', JSON.stringify(usersWithoutAvatars));
+      }
+      
+      return updatedUsers;
+    });
+    
+    return updatedUserData;
   };
 
   const register = (userData) => {
@@ -99,9 +113,8 @@ const defaultCompany = {
     setUsers(prev => [...prev, newUser]);
     setUser(newUser);
     
-    const userForStorage = { ...newUser, avatar: null };
-    localStorage.setItem('currentUser', JSON.stringify(userForStorage));
-    localStorage.setItem('users', JSON.stringify([...users, userForStorage]));
+    localStorage.setItem('currentUser', JSON.stringify(newUser));
+    localStorage.setItem('users', JSON.stringify([...users, newUser]));
     
     return newUser;
   };
@@ -115,13 +128,7 @@ const defaultCompany = {
     if (foundUser) {
       console.log('Пользователь найден:', foundUser);
       setUser(foundUser);
-      const userForStorage = {
-        ...foundUser,
-        avatar: foundUser.avatar && foundUser.avatar.startsWith('data:image') 
-          ? null 
-          : foundUser.avatar
-      };
-      localStorage.setItem('currentUser', JSON.stringify(userForStorage));
+      localStorage.setItem('currentUser', JSON.stringify(foundUser));
       return foundUser;
     } else {
       console.log('Пользователь не найден или неверный пароль');
@@ -141,7 +148,13 @@ const defaultCompany = {
     // Загружаем текущего пользователя
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      try {
+        const userData = JSON.parse(savedUser);
+        setUser(userData);
+        console.log('Пользователь загружен из localStorage:', userData);
+      } catch (error) {
+        console.error('Ошибка при загрузке пользователя:', error);
+      }
     }
   }, []);
 

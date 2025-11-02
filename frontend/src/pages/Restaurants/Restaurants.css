@@ -60,7 +60,7 @@
   justify-content: flex-end;
   height: 400px;
   align-items: flex-start;
-  margin-top: -160px; /* ПОДНИМАЕМ ФОТКИ НАВЕРХ К ЗАГОЛОВКУ */
+  margin-top: -160px;
 }
 
 .header-image {
@@ -82,12 +82,12 @@
   left: 0;
 }
 
-/* Фильтры - ПОДНИМАЕМ НАВЕРХ */
+/* Фильтры */
 .filters-section {
   margin-bottom: 60px;
   padding-bottom: 40px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  margin-top: -170px; /* ПОДНИМАЕМ ФИЛЬТРЫ НАВЕРХ */
+  margin-top: -170px;
   position: relative;
   z-index: 2;
 }
@@ -113,11 +113,11 @@
 }
 
 .filter-select {
-  background: #fff;
+  background: #000;
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   padding: 10px 16px;
-  color: #000;
+  color: #fff;
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
   font-size: 14px;
@@ -127,7 +127,7 @@
 }
 
 .filter-select:hover {
-  background: #f8f8f8;
+  background: #111;
   border-color: rgba(255, 255, 255, 0.5);
 }
 
@@ -137,27 +137,37 @@
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
 }
 
-/* Сетка ресторанов */
+.filter-select option {
+  background: #000;
+  color: #fff;
+  padding: 8px;
+}
+
+/* Сетка ресторанов - МИНИМАЛИСТИЧНЫЙ ДИЗАЙН */
 .restaurants-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 30px;
-  margin-top: 40px; /* Отступ от фильтров */
+  margin-top: 40px;
 }
 
 .restaurant-card {
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
   transition: all 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
+  height: 380px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 .restaurant-card:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateY(-8px);
-  box-shadow: 0 12px 32px rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  transform: translateY(-5px);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .restaurant-image {
@@ -165,6 +175,7 @@
   width: 100%;
   height: 200px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .restaurant-image img {
@@ -178,46 +189,31 @@
   transform: scale(1.05);
 }
 
-.image-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
+/* Бейдж рейтинга - ПРОСТО И МИНИМАЛИСТИЧНО */
 .rating-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
   background: rgba(0, 0, 0, 0.8);
   color: #fff;
-  padding: 6px 12px;
-  border-radius: 20px;
+  padding: 6px 10px;
+  border-radius: 12px;
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
   display: flex;
   align-items: center;
   gap: 4px;
+  backdrop-filter: blur(10px);
 }
 
-.verified-badge {
-  background: rgba(0, 0, 0, 0.8);
-  color: #00ff88;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 16px;
-}
-
+/* Информация о ресторане - ЧИСТО И ПРОСТО */
 .restaurant-info {
   padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .restaurant-name {
@@ -225,8 +221,9 @@
   font-weight: 600;
   font-size: 20px;
   color: #fff;
-  margin: 0 0 8px 0;
+  margin: 0;
   text-align: left;
+  line-height: 1.3;
 }
 
 .delivery-time {
@@ -234,28 +231,86 @@
   font-weight: 400;
   font-size: 14px;
   color: rgba(255, 255, 255, 0.7);
-  margin: 0 0 12px 0;
+  margin: 0;
   text-align: left;
 }
 
+/* Мета информация - МИНИМАЛИСТИЧНО */
 .restaurant-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.price {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 500;
-  font-size: 14px;
-  color: #fff;
+.distance-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .distance {
   font-family: 'Poppins', sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 14px;
+  color: #fff;
+  margin: 0;
+}
+
+.walking-time {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+}
+
+/* Кнопка маршрута - БЕЛАЯ И МИНИМАЛИСТИЧНАЯ */
+.route-button {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.route-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+/* Сообщение когда нет ресторанов */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 80px 40px;
   color: rgba(255, 255, 255, 0.7);
+}
+
+.empty-state h3 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  color: #fff;
+  margin: 0 0 12px 0;
+}
+
+.empty-state p {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  margin: 0;
+  opacity: 0.8;
 }
 
 /* Анимации */
@@ -342,7 +397,7 @@
     width: 100%;
     height: 300px;
     justify-content: space-between;
-    margin-top: 0; /* На мобильных убираем подъем */
+    margin-top: 0;
   }
   
   .header-image {
@@ -350,7 +405,7 @@
   }
   
   .filters-section {
-    margin-top: 0; /* На мобильных убираем подъем */
+    margin-top: 0;
   }
   
   .filters-container {
@@ -380,5 +435,22 @@
   
   .header-image {
     min-height: 200px;
+  }
+  
+  .restaurant-name {
+    font-size: 18px;
+  }
+  
+  .delivery-time {
+    font-size: 13px;
+  }
+  
+  .distance {
+    font-size: 13px;
+  }
+  
+  .route-button {
+    padding: 6px 12px;
+    font-size: 12px;
   }
 }
