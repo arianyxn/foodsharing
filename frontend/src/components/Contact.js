@@ -41,7 +41,7 @@ const Contact = () => {
       <div className="contact-container">
         <div className="contact-content">
           <div className="contact-subtitle">/свяжитесь с нами</div>
-          <h2 className="contact-title">ОТКРОЙТЕ ВОЗМОЖНОСТИ ПАРТНЕРСТВА</h2>
+          <h2 className="contact-title">Откроейте возможности партнерства</h2>
           <button className="contact-button" onClick={handleSendRequest}>
             отправить запрос
           </button>

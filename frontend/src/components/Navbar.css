@@ -1,6 +1,6 @@
 .navbar {
   background-color: #0F0F0F;
-  padding: 20px 120px 0 120px;
+  padding: 15px 80px 0 80px; /* Уменьшил отступы */
   position: static;
 }
 
@@ -8,14 +8,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px;
+  padding: 15px; /* Уменьшил паддинг */
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .logo {
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  font-size: 30px;
+  font-size: 24px; /* Уменьшил с 30px */
   color: white;
 }
 
@@ -26,18 +26,18 @@
 .nav-right-section {
   display: flex;
   align-items: center;
-  gap: 40px;
+  gap: 30px; /* Уменьшил расстояние */
 }
 
 .nav-links {
   display: flex;
-  gap: 40px;
+  gap: 30px; /* Уменьшил расстояние */
 }
 
 .nav-link {
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  font-size: 24px;
+  font-size: 18px; /* Уменьшил с 24px */
   color: white;
   opacity: 0.7;
   text-decoration: none;
@@ -49,15 +49,15 @@
 }
 
 .login-btn {
-  width: 150px;
-  height: 74px;
+  width: 130px; /* Уменьшил ширину */
+  height: 60px; /* Уменьшил высоту */
   background-color: white;
   border: 2px solid white;
   border-radius: 8px;
   color: black;
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  font-size: 24px;
+  font-size: 18px; /* Уменьшил с 24px */
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -67,7 +67,7 @@
   border-color: #f0f0f0;
 }
 
-/* Стили для профиля пользователя */
+/* Стили для профиля пользователя - БЕЗ ИЗМЕНЕНИЙ */
 .user-profile {
   display: flex;
   align-items: center;

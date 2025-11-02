@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import './Steps.css';
+import './Goal.css';
 
-const Steps = () => {
+const Goal = () => {
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
 
@@ -29,37 +29,37 @@ const Steps = () => {
   }, []);
 
   return (
-    <section className={`steps ${isVisible ? 'visible' : ''}`} ref={sectionRef}>
-      <div className="steps-container">
+    <section className={`goal ${isVisible ? 'visible' : ''}`} ref={sectionRef}>
+      <div className="goal-container">
         {/* Верхний контейнер */}
-        <div className="steps-top">
-          <div className="steps-header">
-            <div className="steps-subtitle">/наша цель</div>
-            <div className="steps-title">
+        <div className="goal-top">
+          <div className="goal-header">
+            <div className="goal-subtitle">/наша цель</div>
+            <div className="goal-title">
               <span className="title-line">Совместное</span>
               <span className="title-line">использование еды</span>
             </div>
           </div>
-          <div className="steps-description">
+          <div className="goal-description">
             Наши партнеры делятся свежими продуктами и блюдами, помогая друг другу и заботясь о планете.
           </div>
         </div>
 
         {/* Нижний контейнер с шагами */}
-        <div className="steps-bottom">
-          <div className="step-item">
-            <div className="step-number">1</div>
-            <div className="step-text">Доступность еды для всех</div>
+        <div className="goal-bottom">
+          <div className="goal-item">
+            <div className="goal-number">1</div>
+            <div className="goal-text">Доступность еды для всех</div>
           </div>
           
-          <div className="step-item">
-            <div className="step-number">2</div>
-            <div className="step-text">Повышение социальной ответственности</div>
+          <div className="goal-item">
+            <div className="goal-number">2</div>
+            <div className="goal-text">Повышение социальной ответственности</div>
           </div>
           
-          <div className="step-item">
-            <div className="step-number">3</div>
-            <div className="step-text">Снижение излишков еды</div>
+          <div className="goal-item">
+            <div className="goal-number">3</div>
+            <div className="goal-text">Снижение излишков еды</div>
           </div>
         </div>
       </div>
@@ -67,4 +67,4 @@ const Steps = () => {
   );
 };
 
-export default Steps;
+export default Goal;

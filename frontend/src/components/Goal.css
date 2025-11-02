@@ -1,4 +1,4 @@
-.steps {
+.goal {
   height: 910px;
   background-color: black;
   padding: 0 120px;
@@ -9,12 +9,12 @@
   transition: all 0.4s ease-out;
 }
 
-.steps.visible {
+.goal.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-.steps-container {
+.goal-container {
   height: 510px;
   width: 100%;
   margin-top: 100px;
@@ -25,7 +25,7 @@
 }
 
 /* Верхний контейнер */
-.steps-top {
+.goal-top {
   height: 160px;
   display: flex;
   justify-content: space-between;
@@ -33,13 +33,13 @@
   margin-bottom: 250px;
 }
 
-.steps-header {
+.goal-header {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-.steps-subtitle {
+.goal-subtitle {
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
   font-size: 24px;
@@ -51,9 +51,9 @@
   transition: all 0.3s ease-out 0.1s;
 }
 
-.steps-title {
+.goal-title {
   font-family: 'Poppins', sans-serif;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 60px;
   color: white;
   line-height: 1.1;
@@ -83,13 +83,13 @@
   transition-delay: 0.3s;
 }
 
-.steps-description {
+.goal-description {
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
-  font-size: 24px;
+  font-size: 20px; /* Уменьшил с 24px до 20px */
   color: white;
   opacity: 0.7;
-  width: 470px;
+  width: 388px;
   height: 90px;
   text-align: left;
   margin-top: 0;
@@ -97,11 +97,11 @@
   transform: translateX(30px);
   transition: all 0.3s ease-out 0.4s;
   align-self: flex-end;
-  margin-top: 40px;
+  margin-top: 0px;
 }
 
 /* Нижний контейнер с шагами */
-.steps-bottom {
+.goal-bottom {
   height: 204px;
   display: flex;
   justify-content: space-between;
@@ -109,7 +109,7 @@
   width: 100%;
 }
 
-.step-item {
+.goal-item {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -124,7 +124,7 @@
 }
 
 /* Эффект зеркального блеска */
-.step-item::before {
+.goal-item::before {
   content: '';
   position: absolute;
   top: -50%;
@@ -143,7 +143,7 @@
   z-index: 1;
 }
 
-.step-item:hover::before {
+.goal-item:hover::before {
   opacity: 1;
   animation: shine 1.5s ease-in-out;
 }
@@ -161,7 +161,7 @@
 }
 
 /* Дополнительный эффект свечения */
-.step-item::after {
+.goal-item::after {
   content: '';
   position: absolute;
   top: 0;
@@ -180,17 +180,17 @@
   border-radius: 8px;
 }
 
-.step-item:hover::after {
+.goal-item:hover::after {
   opacity: 1;
 }
 
-.step-number {
+.goal-number {
   font-family: 'Poppins', sans-serif;
   font-weight: 400;
-  font-size: 80px;
+  font-size: 70px; /* Уменьшил с 80px до 70px */
   color: white;
   line-height: 1;
-  margin-bottom: 45px;
+  margin-bottom: 35px; /* Уменьшил отступ */
   opacity: 0;
   transform: scale(0.8);
   transition: all 0.3s ease-out;
@@ -208,19 +208,19 @@
   }
 }
 
-.step-item:nth-child(2) .step-number {
+.goal-item:nth-child(2) .goal-number {
   opacity: 0.7;
   animation-delay: 0.5s; /* Задержка для второго шага */
 }
 
-.step-item:nth-child(3) .step-number {
+.goal-item:nth-child(3) .goal-number {
   animation-delay: 1s; /* Задержка для третьего шага */
 }
 
-.step-text {
+.goal-text {
   font-family: 'Poppins', sans-serif;
   font-weight: 400;
-  font-size: 36px;
+  font-size: 28px; /* Уменьшил с 36px до 28px */
   color: white;
   line-height: 1.2;
   opacity: 0.7;
@@ -241,100 +241,100 @@
   }
 }
 
-.step-item:nth-child(2) .step-text {
+.goal-item:nth-child(2) .goal-text {
   opacity: 1;
   animation-delay: 0.5s; /* Задержка для второго шага */
 }
 
-.step-item:nth-child(3) .step-text {
+.goal-item:nth-child(3) .goal-text {
   animation-delay: 1s; /* Задержка для третьего шага */
 }
 
 /* Индивидуальные отступы для каждого шага */
-.step-item:nth-child(1) .step-number {
-  margin-bottom: 45px;
+.goal-item:nth-child(1) .goal-number {
+  margin-bottom: 35px; /* Уменьшил с 45px */
 }
 
-.step-item:nth-child(2) .step-number {
-  margin-bottom: 42px;
+.goal-item:nth-child(2) .goal-number {
+  margin-bottom: 32px; /* Уменьшил с 42px */
 }
 
-.step-item:nth-child(3) .step-number {
-  margin-bottom: 42px;
+.goal-item:nth-child(3) .goal-number {
+  margin-bottom: 32px; /* Уменьшил с 42px */
 }
 
 /* Анимации при появлении */
-.steps.visible .steps-subtitle {
+.goal.visible .goal-subtitle {
   opacity: 0.7;
   transform: translateX(0);
 }
 
-.steps.visible .title-line {
+.goal.visible .title-line {
   opacity: 1;
   transform: translateX(0);
 }
 
-.steps.visible .steps-description {
+.goal.visible .goal-description {
   opacity: 0.7;
   transform: translateX(0);
 }
 
-.steps.visible .step-item {
+.goal.visible .goal-item {
   opacity: 1;
   transform: translateY(0);
 }
 
-.steps.visible .step-number {
+.goal.visible .goal-number {
   opacity: 1;
   transform: scale(1);
 }
 
-.steps.visible .step-item:nth-child(2) .step-number {
+.goal.visible .goal-item:nth-child(2) .goal-number {
   opacity: 0.7;
 }
 
-.steps.visible .step-text {
+.goal.visible .goal-text {
   opacity: 0.7;
   transform: translateY(0);
 }
 
-.steps.visible .step-item:nth-child(2) .step-text {
+.goal.visible .goal-item:nth-child(2) .goal-text {
   opacity: 1;
 }
 
 /* Задержки для шагов */
-.steps.visible .step-item:nth-child(1) {
+.goal.visible .goal-item:nth-child(1) {
   transition-delay: 0.5s;
 }
 
-.steps.visible .step-item:nth-child(2) {
+.goal.visible .goal-item:nth-child(2) {
   transition-delay: 0.6s;
 }
 
-.steps.visible .step-item:nth-child(3) {
+.goal.visible .goal-item:nth-child(3) {
   transition-delay: 0.7s;
 }
 
-.steps.visible .step-item:nth-child(1) .step-number {
+.goal.visible .goal-item:nth-child(1) .goal-number {
   transition-delay: 0.55s;
 }
 
-.steps.visible .step-item:nth-child(2) .step-number {
+.goal.visible .goal-item:nth-child(2) .goal-number {
   transition-delay: 0.65s;
 }
 
-.steps.visible .step-item:nth-child(3) .step-number {
+.goal.visible .goal-item:nth-child(3) .goal-number {
   transition-delay: 0.75s;
 }
 
-.steps.visible .step-item:nth-child(1) .step-text {
+.goal.visible .goal-item:nth-child(1) .goal-text {
   transition-delay: 0.6s;
 }
 
-.steps.visible .step-item:nth-child(2) .step-text {
+.goal.visible .goal-item:nth-child(2) .goal-text {
   transition-delay: 0.7s;
 }
 
-.steps.visible .step-item:nth-child(3) .step-text {
+.goal.visible .goal-item:nth-child(3) .goal-text {
   transition-delay: 0.8s;
 }

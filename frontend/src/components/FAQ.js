@@ -59,10 +59,10 @@ const FAQ = () => {
         <div className="faq-top">
           <div className="faq-header">
             <div className="faq-subtitle">/FAQ</div>
-            <h2 className="faq-title">ЧАСТЫЕ ВОПРОСЫ</h2>
+            <h2 className="faq-title">Частые вопросы</h2>
             <p className="faq-description">
-              Есть вопросы? Ознакомьтесь с ответами<br />
-              на самые частые из них.
+              Ознакомьтесь с ответами на самые<br />
+              частые вопросами.
             </p>
           </div>
         </div>
