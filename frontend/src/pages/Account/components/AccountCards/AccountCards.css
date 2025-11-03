@@ -30,7 +30,6 @@
   margin: 0;
 }
 
-/* Кнопка назад */
 .back-button {
   background: rgba(255, 255, 255, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -54,7 +53,6 @@
   border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Пустое состояние */
 .empty-cards {
   text-align: center;
   padding: 60px 40px;
@@ -101,14 +99,12 @@
   background: #f0f0f0;
 }
 
-/* Сетка карт */
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 20px;
 }
 
-/* Стили карточек - ФИОЛЕТОВАЯ АКТИВНАЯ, СЕРАЯ НЕАКТИВНАЯ */
 .active-card {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -340,7 +336,6 @@
   opacity: 1;
 }
 
-/* Форма добавления карты */
 .add-card-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -431,7 +426,6 @@
   opacity: 0.8;
 }
 
-/* Стили формы */
 .card-form {
   display: flex;
   flex-direction: column;
@@ -504,12 +498,12 @@
   text-align: left;
 }
 
-/* Чекбокс */
 .checkbox-container {
   display: flex;
   align-items: center;
   margin-top: 10px;
   text-align: left;
+  justify-content: flex-start;
 }
 
 .checkbox-label {
@@ -523,6 +517,7 @@
   opacity: 0.8;
   transition: opacity 0.3s ease;
   text-align: left;
+  width: auto;
 }
 
 .checkbox-label:hover {
@@ -560,7 +555,6 @@
   transform: rotate(45deg);
 }
 
-/* Кнопки формы */
 .form-actions {
   display: flex;
   gap: 16px;
@@ -627,7 +621,6 @@
   text-align: left;
 }
 
-/* Анимации для карт */
 @keyframes cardSlideIn {
   from {
     opacity: 0;
@@ -647,7 +640,6 @@
 .card-item:nth-child(2) { animation-delay: 0.2s; }
 .card-item:nth-child(3) { animation-delay: 0.3s; }
 
-/* Адаптивность */
 @media (max-width: 968px) {
   .add-card-form {
     grid-template-columns: 1fr;

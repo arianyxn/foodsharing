@@ -1,18 +1,119 @@
-import React from 'react';
+// src/components/Account/AccountOrders/AccountOrders.js
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../../context/AuthContext';
 import './AccountOrders.css';
 
 const AccountOrders = () => {
   const navigate = useNavigate();
+  const { user, getUserOrders } = useAuth();
+  const [userOrders, setUserOrders] = useState([]);
+
+  useEffect(() => {
+    if (user && user.id) {
+      const orders = getUserOrders(user.id);
+      // Сортируем по дате создания (новые сверху)
+      const sortedOrders = orders.sort((a, b) => 
+        new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setUserOrders(sortedOrders);
+    }
+  }, [user, getUserOrders]);
 
   const handleBrowseProducts = () => {
     navigate('/restaurants');
   };
 
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'completed': return 'Завершен';
+      case 'pending': return 'В обработке';
+      case 'cancelled': return 'Отменен';
+      default: return status;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'completed': return '#4CAF50';
+      case 'pending': return '#ffa726';
+      case 'cancelled': return '#f44336';
+      default: return '#6c757d';
+    }
+  };
+
+  const formatDateTime = (dateString) => {
+    const date = new Date(dateString);
+    return {
+      date: date.toLocaleDateString('ru-RU'),
+      time: date.toLocaleTimeString('ru-RU', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })
+    };
+  };
+
   return (
     <div className="account-section">
-      <h2 className="section-title">Мои заказы</h2>
-      <div className="orders-list">
+      <div className="section-header">
+        <h2 className="section-title">Мои заказы</h2>
+      </div>
+      
+      {userOrders.length > 0 ? (
+        <div className="orders-checks">
+          {userOrders.map(order => {
+            const { date, time } = formatDateTime(order.createdAt);
+            return (
+              <div key={order.id} className="order-check">
+                <div className="check-header">
+                  <div className="check-restaurant">
+                    <h3>{order.companyName || 'Ресторан'}</h3>
+                    <span className="check-order-id">#{order.id}</span>
+                  </div>
+                  <div className="check-date">
+                    {date} в {time}
+                  </div>
+                </div>
+                
+                <div className="check-items">
+                  {order.items && order.items.map((item, index) => (
+                    <div key={index} className="check-item">
+                      <span className="item-name">{item.name}</span>
+                      <span className="item-quantity">×{item.quantity}</span>
+                      <span className="item-price">{(item.price * item.quantity).toLocaleString()} ₸</span>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="check-footer">
+                  <div className="check-total">
+                    <span>Итого:</span>
+                    <strong>{order.total ? order.total.toLocaleString() : '0'} ₸</strong>
+                  </div>
+                  <div className="check-status">
+                    <span 
+                      className="status-badge"
+                      style={{ 
+                        backgroundColor: `${getStatusColor(order.status)}20`,
+                        color: getStatusColor(order.status),
+                        borderColor: `${getStatusColor(order.status)}40`
+                      }}
+                    >
+                      {getStatusText(order.status)}
+                    </span>
+                  </div>
+                </div>
+                
+                {order.cardLast4 && (
+                  <div className="check-payment">
+                    💳 Оплачено картой: •••• {order.cardLast4}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
         <div className="empty-orders">
           <div className="orders-icon">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -27,7 +128,7 @@ const AccountOrders = () => {
             Перейти к каталогу
           </button>
         </div>
-      </div>
+      )}
     </div>
   );
 };

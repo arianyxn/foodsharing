@@ -1,31 +1,37 @@
-.orders-filters {
+/* src/components/BusinessAccount/BusinessAccountOrdersHistory/BusinessAccountOrdersHistory.css */
+.business-account-section {
+  animation: fadeIn 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section-header {
   display: flex;
-  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
 }
 
-.filter-select {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  padding: 10px 16px;
-  color: white;
+.section-title {
   font-family: 'Poppins', sans-serif;
-  font-weight: 400;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='white' stroke-opacity='0.7' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 12px;
+  font-weight: 500;
+  font-size: 28px;
+  color: white;
+  margin: 0;
 }
 
-.filter-select:focus {
-  outline: none;
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
+/* Статистика - ВСЕ КАРТОЧКИ В ОДИН РЯД */
 .orders-stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -33,124 +39,259 @@
   margin-bottom: 30px;
 }
 
-.orders-table-container {
+.stat-card {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  overflow: hidden;
-}
-
-.table-header {
-  display: grid;
-  grid-template-columns: 80px 120px 1fr 2fr 100px 120px;
-  gap: 16px;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.table-cell {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  color: white;
-  text-align: left;
-}
-
-.table-row {
-  display: grid;
-  grid-template-columns: 80px 120px 1fr 2fr 100px 120px;
-  gap: 16px;
-  padding: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 24px;
+  text-align: center;
   transition: all 0.3s ease;
-}
-
-.table-row:hover {
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.table-row:last-child {
-  border-bottom: none;
-}
-
-.order-id {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.order-date {
+  min-height: 120px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  justify-content: center;
+  align-items: center;
 }
 
-.date {
+.stat-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.stat-card.revenue {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(76, 175, 80, 0.05) 100%);
+  border-color: rgba(76, 175, 80, 0.2);
+}
+
+.stat-value {
   font-family: 'Poppins', sans-serif;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: 600;
+  font-size: 28px;
   color: white;
+  margin-bottom: 8px;
+  line-height: 1;
 }
 
-.time {
+.stat-label {
   font-family: 'Poppins', sans-serif;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 14px;
   color: rgba(255, 255, 255, 0.7);
+  line-height: 1.2;
+}
+
+/* Список заказов */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.order-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  transition: all 0.3s ease;
+  animation: slideInUp 0.4s ease;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.order-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.order-info h3 {
+  margin: 0 0 8px 0;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: white;
 }
 
 .order-customer {
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
   font-size: 14px;
-  color: white;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 6px;
+  display: block;
 }
 
-.order-items {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.order-item {
+.customer-phone {
   font-family: 'Poppins', sans-serif;
   font-weight: 400;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
-  padding: 2px 8px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  display: inline-block;
-  margin-right: 4px;
-  margin-bottom: 4px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-.order-total {
+.order-date {
   font-family: 'Poppins', sans-serif;
-  font-weight: 600;
+  font-weight: 400;
   font-size: 14px;
-  color: white;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .order-status {
-  display: flex;
-  align-items: center;
+  flex-shrink: 0;
 }
 
 .status-badge {
-  padding: 4px 12px;
+  padding: 6px 12px;
   border-radius: 20px;
   font-family: 'Poppins', sans-serif;
   font-weight: 500;
   font-size: 12px;
   border: 1px solid;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.order-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.item-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  color: white;
+  flex: 1;
+}
+
+.item-quantity {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 12px;
+  min-width: 30px;
+  text-align: center;
+}
+
+.item-price {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: white;
+  min-width: 80px;
+  text-align: right;
+}
+
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 16px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.order-total {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: white;
+}
+
+.order-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.complete-order-btn {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.complete-order-btn:hover {
+  background: #45a049;
+  transform: translateY(-1px);
+}
+
+.cancel-order-btn {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.cancel-order-btn:hover {
+  background: #da190b;
+  transform: translateY(-1px);
+}
+
+.completed-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #4CAF50;
+}
+
+.cancelled-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  color: #f44336;
 }
 
 .empty-state {
   text-align: center;
-  padding: 60px 40px;
+  padding: 80px 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -178,82 +319,88 @@
 
 /* Адаптивность */
 @media (max-width: 1200px) {
-  .table-header,
-  .table-row {
-    grid-template-columns: 80px 120px 1fr 1fr 100px 120px;
-  }
-}
-
-@media (max-width: 968px) {
   .orders-stats {
     grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .table-header {
-    display: none;
-  }
-  
-  .table-row {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    margin-bottom: 12px;
-  }
-  
-  .table-cell {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .table-cell::before {
-    content: attr(data-label);
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.7);
-    text-transform: uppercase;
+    gap: 15px;
   }
 }
 
 @media (max-width: 768px) {
-  .section-header {
+  .orders-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .stat-card {
+    padding: 20px;
+    min-height: 100px;
+  }
+  
+  .stat-value {
+    font-size: 24px;
+  }
+  
+  .order-header {
     flex-direction: column;
-    gap: 16px;
     align-items: flex-start;
   }
   
-  .orders-filters {
+  .order-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .order-actions {
     width: 100%;
+    justify-content: flex-start;
   }
   
-  .filter-select {
-    flex: 1;
+  .order-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
   
-  .orders-stats {
-    grid-template-columns: 1fr;
+  .item-quantity,
+  .item-price {
+    margin-left: 20px;
   }
 }
 
 @media (max-width: 480px) {
-  .table-row {
-    padding: 16px;
-  }
-  
-  .order-items {
-    flex-direction: row;
-    flex-wrap: wrap;
+  .order-card {
+    padding: 20px;
   }
   
   .empty-state {
-    padding: 40px 20px;
+    padding: 60px 20px;
   }
   
   .empty-icon {
     font-size: 48px;
+  }
+  
+  .order-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .complete-order-btn,
+  .cancel-order-btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .stat-card {
+    padding: 16px;
+    min-height: 90px;
+  }
+  
+  .stat-value {
+    font-size: 22px;
+  }
+  
+  .stat-label {
+    font-size: 13px;
   }
 }

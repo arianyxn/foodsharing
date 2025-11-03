@@ -1,15 +1,31 @@
+// src/components/RestaurantDetail/RestaurantDetail.js
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './RestaurantDetail.css';
 
-// Импортируем изображения
-import defaultProduct from '../../assets/images/default-product.jpg';
+// Компонент для всплывающих уведомлений
+const Notification = ({ message, type, onClose }) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className={`notification ${type}`}>
+      <span>{message}</span>
+      <button className="notification-close" onClick={onClose}>×</button>
+    </div>
+  );
+};
 
 const RestaurantDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { users, user: currentUser } = useAuth();
+  const { users, user: currentUser, createOrder } = useAuth();
   
   const [restaurant, setRestaurant] = useState(null);
   const [products, setProducts] = useState([]);
@@ -19,21 +35,21 @@ const RestaurantDetail = () => {
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showPaymentError, setShowPaymentError] = useState(false);
+  const [notification, setNotification] = useState(null);
 
-  // Проверяем, является ли текущий пользователь владельцем ресторана
+  // Проверяем роли пользователей
   const isRestaurantOwner = currentUser && restaurant && currentUser.id === restaurant.id;
+  const isBusinessUser = currentUser && currentUser.role === 'business';
+  const isRegularUser = currentUser && currentUser.role === 'user';
+  const canAddToCart = isRegularUser && !isRestaurantOwner;
 
-  // Категории продуктов
-  const categories = [
-    'all', 'Бургеры', 'Пицца', 'Закуски', 'Десерты', 
-    'Супы', 'Салаты', 'Напитки', 'Другое'
-  ];
-
-  // Время работы ресторана
-  const workingHours = "10:00 - 22:00";
+  // Показ уведомления
+  const showNotification = (message, type = 'info') => {
+    setNotification({ message, type });
+  };
 
   useEffect(() => {
-    // Просто проверяем авторизацию и редиректим
     if (!currentUser) {
       navigate('/restaurants');
       return;
@@ -89,14 +105,12 @@ const RestaurantDetail = () => {
   useEffect(() => {
     let filtered = products;
 
-    // Фильтрация по категории
     if (selectedCategory !== 'all') {
       filtered = filtered.filter(product => 
         product.category === selectedCategory
       );
     }
 
-    // Фильтрация по поисковому запросу
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(product =>
@@ -109,61 +123,115 @@ const RestaurantDetail = () => {
     setFilteredProducts(filtered);
   }, [selectedCategory, searchQuery, products]);
 
-  // Добавление в корзину
+  // Проверяем, есть ли товар в корзине
+  const isProductInCart = (productId) => {
+    return cart.some(item => item.id === productId);
+  };
+
+  // Получить количество товара в корзине
+  const getProductQuantityInCart = (productId) => {
+    const item = cart.find(item => item.id === productId);
+    return item ? item.quantity : 0;
+  };
+
+  // Добавление в корзину с уведомлением
   const addToCart = (product) => {
-    // Проверяем, не является ли пользователь владельцем ресторана
-    if (isRestaurantOwner) return;
+    if (!canAddToCart) {
+      if (isRestaurantOwner) {
+        showNotification('Владельцы ресторана не могут добавлять товары в корзину', 'warning');
+      } else if (isBusinessUser) {
+        showNotification('Компании не могут делать заказы в других ресторанах', 'warning');
+      }
+      return;
+    }
+
+    if (product.quantity === 0) {
+      showNotification('Товар закончился', 'warning');
+      return;
+    }
 
     setCart(prevCart => {
       const existingItem = prevCart.find(item => item.id === product.id);
       
       if (existingItem) {
-        // Проверяем максимальное количество
         const maxQuantity = product.quantity || 10;
         if (existingItem.quantity >= maxQuantity) {
-          alert(`Максимальное количество для "${product.name}" - ${maxQuantity}`);
+          showNotification(`Максимальное количество: ${maxQuantity}`, 'warning');
           return prevCart;
         }
         
-        return prevCart.map(item =>
+        const updatedCart = prevCart.map(item =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
+        
+        showNotification(`Добавлено в корзину: ${product.name}`, 'success');
+        return updatedCart;
       } else {
-        return [...prevCart, { ...product, quantity: 1 }];
+        const newCart = [...prevCart, { ...product, quantity: 1 }];
+        showNotification(`Добавлено в корзину: ${product.name}`, 'success');
+        return newCart;
       }
     });
   };
 
-  // Удаление из корзины
-  const removeFromCart = (productId) => {
-    setCart(prevCart => prevCart.filter(item => item.id !== productId));
-  };
+  // Увеличение количества в корзине
+  const increaseQuantity = (productId) => {
+    if (!canAddToCart) return;
+    
+    const item = cart.find(item => item.id === productId);
+    if (!item) return;
 
-  // Изменение количества
-  const updateQuantity = (productId, newQuantity) => {
-    if (newQuantity < 1) {
-      removeFromCart(productId);
-      return;
-    }
-
-    // Находим продукт для проверки максимального количества
-    const product = cart.find(item => item.id === productId);
+    const product = products.find(p => p.id === productId);
     const maxQuantity = product?.quantity || 10;
 
-    if (newQuantity > maxQuantity) {
-      alert(`Максимальное количество для "${product.name}" - ${maxQuantity}`);
+    if (item.quantity >= maxQuantity) {
+      showNotification(`Максимальное количество: ${maxQuantity}`, 'warning');
       return;
     }
 
     setCart(prevCart =>
       prevCart.map(item =>
         item.id === productId
-          ? { ...item, quantity: newQuantity }
+          ? { ...item, quantity: item.quantity + 1 }
           : item
       )
     );
+  };
+
+  // Уменьшение количества в корзине
+  const decreaseQuantity = (productId) => {
+    if (!canAddToCart) return;
+    
+    const item = cart.find(item => item.id === productId);
+    if (!item) return;
+
+    if (item.quantity === 1) {
+      removeFromCart(productId);
+    } else {
+      setCart(prevCart =>
+        prevCart.map(item =>
+          item.id === productId
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+      );
+    }
+  };
+
+  // Удаление из корзины
+  const removeFromCart = (productId) => {
+    if (!canAddToCart) return;
+    
+    setCart(prevCart => {
+      const product = prevCart.find(item => item.id === productId);
+      const updatedCart = prevCart.filter(item => item.id !== productId);
+      if (product) {
+        showNotification(`Удалено из корзины: ${product.name}`, 'info');
+      }
+      return updatedCart;
+    });
   };
 
   // Общая сумма корзины
@@ -178,34 +246,99 @@ const RestaurantDetail = () => {
 
   // Очистка корзины
   const clearCart = () => {
+    if (!canAddToCart) return;
+    
     if (window.confirm('Очистить корзину?')) {
       setCart([]);
+      showNotification('Корзина очищена', 'info');
     }
   };
 
   // Оформление заказа
-  const handleCheckout = () => {
-    if (cart.length === 0) return;
+  const handleCheckout = async () => {
+    if (!canAddToCart) {
+      showNotification('У вас нет прав для оформления заказа', 'warning');
+      return;
+    }
     
-    // Здесь будет логика оформления заказа
-    alert('Заказ оформлен! Сумма: ' + getTotalPrice().toLocaleString() + ' ₸');
-    setCart([]);
-    setIsCartOpen(false);
-  };
-
-  // Получение изображения продукта
-  const getProductImage = (product) => {
+    if (cart.length === 0) {
+      showNotification('Корзина пуста', 'warning');
+      return;
+    }
+    
+    const totalPrice = getTotalPrice();
+    
     try {
-      if (product.image && typeof product.image === 'string') {
-        return product.image;
+      // Получаем карты пользователя
+      const userCards = JSON.parse(localStorage.getItem(`userCards_${currentUser.id}`)) || [];
+      const defaultCard = userCards.find(card => card.isDefault);
+      
+      if (!defaultCard) {
+        showNotification('Добавьте карту для оплаты', 'warning');
+        return;
       }
-      return defaultProduct;
+      
+      // Создаем данные заказа
+      const orderData = {
+        userId: currentUser.id,
+        companyId: parseInt(id),
+        companyName: restaurant.companyName,
+        customerName: currentUser.nickname || currentUser.email,
+        customerPhone: currentUser.phone || 'Не указан',
+        items: cart.map(item => ({
+          id: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price
+        })),
+        total: totalPrice,
+        paymentMethod: 'card'
+      };
+      
+      // Используем функцию createOrder из AuthContext
+      const newOrder = createOrder(orderData);
+      
+      showNotification(`Заказ #${newOrder.id} успешно оформлен!`, 'success');
+      setCart([]);
+      setIsCartOpen(false);
+      
     } catch (error) {
-      return defaultProduct;
+      console.error('Ошибка при оформлении заказа:', error);
+      if (error.message.includes('Недостаточно средств')) {
+        setShowPaymentError(true);
+      } else {
+        showNotification('Ошибка оформления заказа', 'error');
+      }
     }
   };
 
-  // Убираем лишние проверки в рендере, просто показываем контент
+  // Получение карты по умолчанию
+  const getDefaultCard = () => {
+    const userCards = JSON.parse(localStorage.getItem(`userCards_${currentUser.id}`)) || [];
+    return userCards.find(card => card.isDefault);
+  };
+
+  // Получение текста для кнопки добавления в корзину
+  const getAddToCartButtonText = (product) => {
+    if (isRestaurantOwner) {
+      return 'Ваш продукт';
+    } else if (isBusinessUser) {
+      return 'Только просмотр';
+    } else if (product.quantity === 0) {
+      return 'Нет в наличии';
+    } else {
+      return 'В корзину';
+    }
+  };
+
+  // Получение класса для кнопки добавления в корзину
+  const getAddToCartButtonClass = (product) => {
+    if (isRestaurantOwner || isBusinessUser || product.quantity === 0) {
+      return 'add-to-cart-btn disabled';
+    }
+    return 'add-to-cart-btn';
+  };
+
   if (loading) {
     return (
       <div className="restaurant-detail-loading">
@@ -228,6 +361,15 @@ const RestaurantDetail = () => {
 
   return (
     <div className="restaurant-detail">
+      {/* Всплывающие уведомления */}
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
+
       {/* Упрощенная шапка ресторана */}
       <div className="restaurant-header-simple">
         <div className="restaurant-info-simple">
@@ -244,7 +386,7 @@ const RestaurantDetail = () => {
           <div className="restaurant-details-simple">
             <h1 className="restaurant-title-simple">{restaurant.companyName}</h1>
             <div className="restaurant-working-hours">
-              🕒 Время работы: {workingHours}
+              🕒 Время работы: 10:00 - 22:00
             </div>
             {isRestaurantOwner && (
               <div className="owner-badge-simple">
@@ -259,7 +401,7 @@ const RestaurantDetail = () => {
         {/* Навигация категорий */}
         <div className="categories-nav">
           <div className="categories-scroll">
-            {categories.map(category => (
+            {['all', 'Бургеры', 'Пицца', 'Закуски', 'Десерты', 'Супы', 'Салаты', 'Напитки', 'Другое'].map(category => (
               <button
                 key={category}
                 className={`category-btn ${selectedCategory === category ? 'active' : ''}`}
@@ -301,57 +443,82 @@ const RestaurantDetail = () => {
             </div>
           ) : (
             <div className="products-grid">
-              {filteredProducts.map(product => (
-                <div key={product.id} className="product-card">
-                  <div className="product-image">
-                    <img 
-                      src={getProductImage(product)} 
-                      alt={product.name}
-                      onError={(e) => {
-                        e.target.src = defaultProduct;
-                      }}
-                    />
-                    {product.quantity !== undefined && product.quantity > 0 && (
-                      <div className="quantity-badge">
-                        В наличии: {product.quantity}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="product-info">
-                    <h3 className="product-name">{product.name}</h3>
-                    <p className="product-category">{product.category}</p>
+              {filteredProducts.map(product => {
+                const isInCart = isProductInCart(product.id);
+                const quantityInCart = getProductQuantityInCart(product.id);
+                
+                return (
+                  <div key={product.id} className="product-card">
+                    <div className="product-image">
+                      <img 
+                        src={product.image || '/default-product.jpg'} 
+                        alt={product.name}
+                        onError={(e) => {
+                          e.target.src = '/default-product.jpg';
+                        }}
+                      />
+                      {product.quantity !== undefined && product.quantity > 0 && (
+                        <div className="quantity-badge">
+                          В наличии: {product.quantity}
+                        </div>
+                      )}
+                    </div>
                     
-                    {product.ingredients && (
-                      <p className="product-ingredients">
-                        {product.ingredients}
-                      </p>
-                    )}
-                    
-                    <div className="product-footer">
-                      <div className="product-price">
-                        {product.price.toLocaleString()} ₸
+                    <div className="product-info">
+                      <h3 className="product-name">{product.name}</h3>
+                      <p className="product-category">{product.category}</p>
+                      
+                      {product.ingredients && (
+                        <p className="product-ingredients">
+                          {product.ingredients}
+                        </p>
+                      )}
+                      
+                      <div className="product-footer">
+                        <div className="product-price">
+                          {product.price.toLocaleString()} ₸
+                        </div>
+                        <div className="product-actions">
+                          {!isInCart ? (
+                            <button
+                              className={getAddToCartButtonClass(product)}
+                              onClick={() => addToCart(product)}
+                              disabled={!canAddToCart || product.quantity === 0}
+                            >
+                              {getAddToCartButtonText(product)}
+                            </button>
+                          ) : (
+                            <div className="quantity-controls">
+                              <button
+                                className="quantity-btn decrease"
+                                onClick={() => decreaseQuantity(product.id)}
+                                disabled={!canAddToCart}
+                              >
+                                -
+                              </button>
+                              <span className="quantity-display">{quantityInCart}</span>
+                              <button
+                                className="quantity-btn increase"
+                                onClick={() => increaseQuantity(product.id)}
+                                disabled={!canAddToCart || quantityInCart >= (product.quantity || 10)}
+                              >
+                                +
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <button
-                        className={`add-to-cart-btn ${isRestaurantOwner ? 'disabled' : ''}`}
-                        onClick={() => addToCart(product)}
-                        disabled={product.quantity === 0 || isRestaurantOwner}
-                        title={isRestaurantOwner ? "Владельцы ресторана не могут добавлять товары в корзину" : ""}
-                      >
-                        {product.quantity === 0 ? 'Нет в наличии' : 
-                         isRestaurantOwner ? 'Ваш продукт' : 'В корзину'}
-                      </button>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
       </div>
 
-      {/* Плавающая кнопка корзины (только для пользователей) - скрывается когда корзина открыта */}
-      {!isRestaurantOwner && cart.length > 0 && !isCartOpen && (
+      {/* Плавающая кнопка корзины (только для обычных пользователей) */}
+      {canAddToCart && cart.length > 0 && !isCartOpen && (
         <div className="cart-floating-button">
           <button 
             className="cart-toggle-btn"
@@ -363,8 +530,8 @@ const RestaurantDetail = () => {
         </div>
       )}
 
-      {/* Боковая панель корзины (только для пользователей) */}
-      {!isRestaurantOwner && isCartOpen && (
+      {/* Боковая панель корзины (только для обычных пользователей) */}
+      {canAddToCart && isCartOpen && (
         <div className="cart-sidebar">
           <div className="cart-header">
             <h3>Корзина</h3>
@@ -395,8 +562,8 @@ const RestaurantDetail = () => {
                 
                 <div className="cart-item-controls">
                   <button
-                    className="quantity-btn"
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    className="quantity-btn decrease"
+                    onClick={() => decreaseQuantity(item.id)}
                   >
                     -
                   </button>
@@ -404,8 +571,8 @@ const RestaurantDetail = () => {
                   <span className="cart-item-quantity">{item.quantity}</span>
                   
                   <button
-                    className="quantity-btn"
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    className="quantity-btn increase"
+                    onClick={() => increaseQuantity(item.id)}
                     disabled={item.quantity >= (item.quantity || 10)}
                   >
                     +
@@ -427,18 +594,64 @@ const RestaurantDetail = () => {
             <div className="cart-total">
               Итого: <span>{getTotalPrice().toLocaleString()} ₸</span>
             </div>
+            <div className="payment-info">
+              <div className="card-selection">
+                <span>Карта для оплаты:</span>
+                <span className="selected-card">
+                  {getDefaultCard() ? `•••• ${getDefaultCard().last4}` : 'Не выбрана'}
+                </span>
+              </div>
+              {!getDefaultCard() && (
+                <div className="no-card-warning">
+                  ⚠️ Добавьте карту в разделе "Мои карты"
+                </div>
+              )}
+            </div>
             <button 
               className="checkout-btn"
               onClick={handleCheckout}
+              disabled={!getDefaultCard()}
             >
-              Оформить заказ
+              {getDefaultCard() ? 'Оформить заказ' : 'Добавьте карту для оплаты'}
             </button>
           </div>
         </div>
       )}
 
+      {/* Модальное окно ошибки оплаты (УПРОЩЕННОЕ) */}
+      {showPaymentError && (
+        <div className="payment-error-overlay">
+          <div className="payment-error-modal">
+            <div className="payment-error-header">
+              <h3>Недостаточно средств</h3>
+              <button 
+                className="close-error-btn"
+                onClick={() => setShowPaymentError(false)}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="payment-error-content">
+              <div className="error-details">
+                <p>На вашей карте недостаточно средств для оплаты заказа.</p>
+              </div>
+            </div>
+            
+            <div className="payment-error-actions">
+              <button 
+                className="cancel-error-btn"
+                onClick={() => setShowPaymentError(false)}
+              >
+                Понятно
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Затемнение фона когда корзина открыта */}
-      {!isRestaurantOwner && isCartOpen && (
+      {canAddToCart && isCartOpen && (
         <div 
           className="cart-overlay"
           onClick={() => setIsCartOpen(false)}

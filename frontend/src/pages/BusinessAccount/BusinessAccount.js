@@ -16,6 +16,14 @@ const BusinessAccount = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
+  // Если пользователь не загружен, просто редиректим на главную
+  useEffect(() => {
+    if (!user) {
+      navigate('/');
+      return;
+    }
+  }, [user, navigate]);
+
   // Состояния
   const [activeSection, setActiveSection] = useState('profile');
   const [showNotification, setShowNotification] = useState(false);
@@ -61,6 +69,11 @@ const BusinessAccount = () => {
       }
     }
   }, [user]);
+
+  // Если пользователь не загружен, показываем ничего (будет редирект)
+  if (!user) {
+    return null;
+  }
 
   // Обработчики для профиля компании
   const handleInputChange = (e) => {
@@ -309,17 +322,6 @@ const BusinessAccount = () => {
         );
     }
   };
-
-  // Проверка роли пользователя
-  if (!user || user.role !== 'business') {
-    return (
-      <div className="access-denied">
-        <h2>Доступ запрещен</h2>
-        <p>Эта страница доступна только для бизнес-аккаунтов.</p>
-        <button onClick={() => navigate('/')}>На главную</button>
-      </div>
-    );
-  }
 
   return (
     <div className="business-account-page">

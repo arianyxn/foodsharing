@@ -32,20 +32,6 @@ const Account = () => {
     address: ''
   });
 
-  // Данные карт
-  const [userCards, setUserCards] = useState([]);
-  const [cardData, setCardData] = useState({
-    number: '',
-    cardHolder: '',
-    expiry: '',
-    cvv: '',
-    isDefault: false
-  });
-  const [cardErrors, setCardErrors] = useState({});
-  const [editingCardId, setEditingCardId] = useState(null);
-
-  const cities = ['Алматы', 'Астана', 'Шымкент'];
-
   // Загрузка данных при монтировании
   useEffect(() => {
     if (user) {
@@ -62,77 +48,8 @@ const Account = () => {
       if (!hasBasicInfo) {
         setShowNotification(true);
       }
-
-      loadUserCards();
     }
   }, [user]);
-
-  // Сортировка карт - активная всегда первая
-  useEffect(() => {
-    if (userCards.length > 0) {
-      const sortedCards = [...userCards].sort((a, b) => 
-        a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1
-      );
-      if (JSON.stringify(sortedCards) !== JSON.stringify(userCards)) {
-        setUserCards(sortedCards);
-      }
-    }
-  }, [userCards]);
-
-  // Функции для работы с картами
-  const detectCardType = (number) => {
-    const cleanNumber = number.replace(/\s/g, '');
-    if (/^4/.test(cleanNumber)) return 'visa';
-    if (/^5[1-5]/.test(cleanNumber)) return 'mastercard';
-    if (/^2/.test(cleanNumber)) return 'mir';
-    return '';
-  };
-
-  const formatCardNumber = (number) => {
-    return number.replace(/\s/g, '').replace(/(\d{4})/g, '$1 ').trim();
-  };
-
-  const validateCardNumber = (number) => {
-    const cleanNumber = number.replace(/\s/g, '');
-    if (!/^\d+$/.test(cleanNumber)) return 'Только цифры';
-    if (cleanNumber.length !== 16) return 'Должно быть 16 цифр';
-    return '';
-  };
-
-  const validateExpiry = (expiry) => {
-    if (!/^\d{2}\/\d{2}$/.test(expiry)) return 'Формат: ММ/ГГ';
-    const [month, year] = expiry.split('/');
-    const monthNum = parseInt(month);
-    const yearNum = parseInt(year);
-    
-    if (monthNum < 1 || monthNum > 12) return 'Неверный месяц';
-    
-    const currentYear = new Date().getFullYear() % 100;
-    const currentMonth = new Date().getMonth() + 1;
-    
-    if (yearNum < currentYear || (yearNum === currentYear && monthNum < currentMonth)) {
-      return 'Карта просрочена';
-    }
-    
-    return '';
-  };
-
-  const validateCVV = (cvv) => {
-    if (!/^\d+$/.test(cvv)) return 'Только цифры';
-    if (cvv.length !== 3) return 'Должно быть 3 цифры';
-    return '';
-  };
-
-  // Загрузка карт пользователя
-  const loadUserCards = () => {
-    if (user) {
-      const savedCards = JSON.parse(localStorage.getItem(`userCards_${user.id}`)) || [];
-      const sortedCards = savedCards.sort((a, b) => 
-        a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1
-      );
-      setUserCards(sortedCards);
-    }
-  };
 
   // Обработчики для профиля
   const handleInputChange = (e) => {
@@ -234,66 +151,6 @@ const Account = () => {
     setIsEditing(false);
   };
 
-  // Обработчики для карт
-  const handleAddCard = () => {
-    setEditingCardId(null);
-    setCardData({
-      number: '',
-      cardHolder: '',
-      expiry: '',
-      cvv: '',
-      isDefault: userCards.length === 0
-    });
-    setActiveSection('add-card');
-  };
-
-  const handleEditCard = (cardId) => {
-    const cardToEdit = userCards.find(card => card.id === cardId);
-    if (cardToEdit) {
-      setCardData({
-        number: formatCardNumber(cardToEdit.number),
-        cardHolder: cardToEdit.cardHolder,
-        expiry: cardToEdit.expiry,
-        cvv: '', // CVV не хранится для безопасности
-        isDefault: cardToEdit.isDefault
-      });
-      setEditingCardId(cardId);
-      setActiveSection('add-card');
-    }
-  };
-
-  const handleSetDefaultCard = (cardId) => {
-    const updatedCards = userCards.map(card => ({
-      ...card,
-      isDefault: card.id === cardId
-    }));
-    
-    const sortedCards = updatedCards.sort((a, b) => 
-      a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1
-    );
-    
-    setUserCards(sortedCards);
-    localStorage.setItem(`userCards_${user.id}`, JSON.stringify(sortedCards));
-  };
-
-  const handleDeleteCard = (cardId) => {
-    if (window.confirm('Вы уверены, что хотите удалить эту карту?')) {
-      const cardToDelete = userCards.find(card => card.id === cardId);
-      const updatedCards = userCards.filter(card => card.id !== cardId);
-      
-      if (updatedCards.length > 0 && cardToDelete?.isDefault) {
-        updatedCards[0].isDefault = true;
-      }
-      
-      const sortedCards = updatedCards.sort((a, b) => 
-        a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1
-      );
-      
-      setUserCards(sortedCards);
-      localStorage.setItem(`userCards_${user.id}`, JSON.stringify(sortedCards));
-    }
-  };
-
   // Обработчики для диалогов
   const handleLogoutClick = () => {
     setShowLogoutDialog(true);
@@ -341,7 +198,7 @@ const Account = () => {
         );
       
       case 'cards':
-  return <AccountCards user={user} />;
+        return <AccountCards user={user} />;
       
       case 'location':
         return <AccountLocation />;

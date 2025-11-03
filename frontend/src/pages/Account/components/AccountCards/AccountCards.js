@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import './AccountCards.css';
 
 const AccountCards = ({ user }) => {
-  // Состояния
   const [userCards, setUserCards] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingCardId, setEditingCardId] = useState(null);
   
-  // Данные формы
   const [cardData, setCardData] = useState({
     number: '',
     cardHolder: '',
@@ -18,12 +16,10 @@ const AccountCards = ({ user }) => {
 
   const [cardErrors, setCardErrors] = useState({});
 
-  // Загрузка карт
   useEffect(() => {
     loadUserCards();
   }, []);
 
-  // Автоматическая сортировка карт - активная всегда первая
   useEffect(() => {
     if (userCards.length > 0) {
       const sortedCards = [...userCards].sort((a, b) => 
@@ -35,7 +31,6 @@ const AccountCards = ({ user }) => {
     }
   }, [userCards]);
 
-  // Функции для работы с картами
   const detectCardType = (number) => {
     const cleanNumber = number.replace(/\s/g, '');
     if (/^4/.test(cleanNumber)) return 'visa';
@@ -81,7 +76,6 @@ const AccountCards = ({ user }) => {
     return '';
   };
 
-  // Загрузка карт пользователя
   const loadUserCards = () => {
     if (user) {
       const savedCards = JSON.parse(localStorage.getItem(`userCards_${user.id}`)) || [];
@@ -92,7 +86,6 @@ const AccountCards = ({ user }) => {
     }
   };
 
-  // Сохранение карт
   const saveCards = (cards) => {
     const sortedCards = cards.sort((a, b) => 
       a.isDefault === b.isDefault ? 0 : a.isDefault ? -1 : 1
@@ -103,7 +96,6 @@ const AccountCards = ({ user }) => {
     }
   };
 
-  // Обработчик изменения полей формы
   const handleCardInputChange = (e) => {
     const { name, value } = e.target;
     
@@ -129,7 +121,6 @@ const AccountCards = ({ user }) => {
     
     setCardData(prev => ({ ...prev, [name]: formattedValue }));
     
-    // Валидация в реальном времени
     if (name === 'number' && value) {
       setCardErrors(prev => ({ ...prev, number: validateCardNumber(value) }));
     }
@@ -141,10 +132,8 @@ const AccountCards = ({ user }) => {
     }
   };
 
-  // Проверка валидности формы
   const isCardFormValid = () => {
     if (editingCardId) {
-      // При редактировании CVV не обязателен
       return cardData.number && 
              cardData.cardHolder && 
              cardData.expiry &&
@@ -152,7 +141,6 @@ const AccountCards = ({ user }) => {
              !cardErrors.expiry &&
              (!cardData.cvv || !cardErrors.cvv);
     } else {
-      // При добавлении новой карты все поля обязательны
       return cardData.number && 
              cardData.cardHolder && 
              cardData.expiry && 
@@ -163,7 +151,6 @@ const AccountCards = ({ user }) => {
     }
   };
 
-  // Добавление новой карты
   const handleAddCard = (e) => {
     e.preventDefault();
     
@@ -189,7 +176,8 @@ const AccountCards = ({ user }) => {
       expiry: cardData.expiry,
       cvv: cardData.cvv,
       type: cardType,
-      isDefault: cardData.isDefault || userCards.length === 0
+      isDefault: cardData.isDefault || userCards.length === 0,
+      balance: 5000
     };
     
     let updatedCards;
@@ -205,7 +193,6 @@ const AccountCards = ({ user }) => {
     setShowForm(false);
   };
 
-  // Начало редактирования карты
   const handleEditCard = (cardId) => {
     const cardToEdit = userCards.find(card => card.id === cardId);
     if (cardToEdit) {
@@ -213,7 +200,7 @@ const AccountCards = ({ user }) => {
         number: formatCardNumber(cardToEdit.number),
         cardHolder: cardToEdit.cardHolder,
         expiry: cardToEdit.expiry,
-        cvv: '', // CVV не хранится для безопасности
+        cvv: '',
         isDefault: cardToEdit.isDefault
       });
       setEditingCardId(cardId);
@@ -221,7 +208,6 @@ const AccountCards = ({ user }) => {
     }
   };
 
-  // Обновление карты
   const handleUpdateCard = (e) => {
     e.preventDefault();
     
@@ -229,7 +215,7 @@ const AccountCards = ({ user }) => {
       number: validateCardNumber(cardData.number),
       cardHolder: cardData.cardHolder ? '' : 'Введите имя владельца',
       expiry: validateExpiry(cardData.expiry),
-      cvv: cardData.cvv ? validateCVV(cardData.cvv) : '' // CVV не обязателен при редактировании
+      cvv: cardData.cvv ? validateCVV(cardData.cvv) : ''
     };
     
     setCardErrors(errors);
@@ -251,14 +237,12 @@ const AccountCards = ({ user }) => {
           isDefault: cardData.isDefault
         };
         
-        // Если указан новый CVV, обновляем его
         if (cardData.cvv) {
           updatedCard.cvv = cardData.cvv;
         }
         
         return updatedCard;
       }
-      // Если устанавливаем новую карту по умолчанию, снимаем флаг с других
       return cardData.isDefault ? { ...card, isDefault: false } : card;
     });
     
@@ -267,7 +251,6 @@ const AccountCards = ({ user }) => {
     setShowForm(false);
   };
 
-  // Установка карты по умолчанию
   const handleSetDefaultCard = (cardId) => {
     const updatedCards = userCards.map(card => ({
       ...card,
@@ -277,13 +260,11 @@ const AccountCards = ({ user }) => {
     saveCards(updatedCards);
   };
 
-  // Удаление карты
   const handleDeleteCard = (cardId) => {
     if (window.confirm('Вы уверены, что хотите удалить эту карту?')) {
       const cardToDelete = userCards.find(card => card.id === cardId);
       const updatedCards = userCards.filter(card => card.id !== cardId);
       
-      // Если удалили карту по умолчанию, сделать первую карту основной
       if (updatedCards.length > 0 && cardToDelete?.isDefault) {
         updatedCards[0].isDefault = true;
       }
@@ -292,7 +273,6 @@ const AccountCards = ({ user }) => {
     }
   };
 
-  // Сброс формы
   const resetForm = () => {
     setCardData({
       number: '',
@@ -305,13 +285,11 @@ const AccountCards = ({ user }) => {
     setEditingCardId(null);
   };
 
-  // Отмена редактирования/добавления
   const handleCancel = () => {
     resetForm();
     setShowForm(false);
   };
 
-  // Начало добавления новой карты
   const handleStartAddCard = () => {
     resetForm();
     setCardData(prev => ({
@@ -321,7 +299,6 @@ const AccountCards = ({ user }) => {
     setShowForm(true);
   };
 
-  // Рендер списка карт
   const renderCardsList = () => (
     <>
       <div className="section-header">
@@ -449,7 +426,6 @@ const AccountCards = ({ user }) => {
     </>
   );
 
-  // Рендер формы карты
   const renderCardForm = () => (
     <>
       <div className="section-header">
