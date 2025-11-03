@@ -19,6 +19,22 @@ const Register = () => {
     agreeTerms: false
   });
 
+  const [errors, setErrors] = useState({
+    nickname: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    agreeTerms: ''
+  });
+
+  const [touched, setTouched] = useState({
+    nickname: false,
+    email: false,
+    password: false,
+    confirmPassword: false,
+    agreeTerms: false
+  });
+
   const [currentImage, setCurrentImage] = useState(0);
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -34,43 +50,123 @@ const Register = () => {
     return () => clearInterval(interval);
   }, [images.length]);
 
+  // Валидация форм
+  const validateField = (name, value) => {
+    switch (name) {
+      case 'nickname':
+        if (!value.trim()) return 'Никнейм обязателен';
+        if (value.length < 2) return 'Никнейм должен содержать минимум 2 символа';
+        if (value.length > 20) return 'Никнейм не должен превышать 20 символов';
+        return '';
+
+      case 'email':
+        if (!value.trim()) return 'Email обязателен';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Введите корректный email';
+        return '';
+
+      case 'password':
+        if (!value) return 'Пароль обязателен';
+        if (value.length < 6) return 'Пароль должен содержать минимум 6 символов';
+        return '';
+
+      case 'confirmPassword':
+        if (!value) return 'Подтверждение пароля обязательно';
+        if (value !== formData.password) return 'Пароли не совпадают';
+        return '';
+
+      case 'agreeTerms':
+        if (!value) return 'Необходимо согласиться с условиями';
+        return '';
+
+      default:
+        return '';
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    const fieldValue = type === 'checkbox' ? checked : value;
+
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: fieldValue
+    }));
+
+    // Валидация при изменении (только для touched полей)
+    if (touched[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: validateField(name, fieldValue)
+      }));
+    }
+  };
+
+  const handleBlur = (e) => {
+    const { name, value, type, checked } = e.target;
+    const fieldValue = type === 'checkbox' ? checked : value;
+
+    setTouched(prev => ({
+      ...prev,
+      [name]: true
+    }));
+
+    setErrors(prev => ({
+      ...prev,
+      [name]: validateField(name, fieldValue)
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (formData.password !== formData.confirmPassword) {
-      alert('Пароли не совпадают');
-      return;
-    }
-    
-    if (!formData.agreeTerms) {
-      alert('Необходимо согласиться с условиями');
+    // Помечаем все поля как touched для показа всех ошибок
+    const allTouched = {
+      nickname: true,
+      email: true,
+      password: true,
+      confirmPassword: true,
+      agreeTerms: true
+    };
+    setTouched(allTouched);
+
+    // Валидируем все поля
+    const newErrors = {
+      nickname: validateField('nickname', formData.nickname),
+      email: validateField('email', formData.email),
+      password: validateField('password', formData.password),
+      confirmPassword: validateField('confirmPassword', formData.confirmPassword),
+      agreeTerms: validateField('agreeTerms', formData.agreeTerms)
+    };
+
+    setErrors(newErrors);
+
+    // Проверяем есть ли ошибки
+    const hasErrors = Object.values(newErrors).some(error => error !== '');
+    if (hasErrors) {
+      alert('Пожалуйста, исправьте ошибки в форме');
       return;
     }
 
-    // Проверяем, нет ли уже пользователя с таким email
-    const users = JSON.parse(localStorage.getItem('users') || '[]');
-    const existingUser = users.find(user => user.email === formData.email);
-    if (existingUser) {
-      alert('Пользователь с таким email уже существует');
-      return;
-    }
+    try {
+      const user = await register({
+        nickname: formData.nickname,
+        email: formData.email,
+        password: formData.password
+      });
 
-    const user = register({
-      nickname: formData.nickname,
-      email: formData.email,
-      password: formData.password
-    });
-
-    if (user) {
-      navigate('/'); // Возвращаем на главную после успешной регистрации
+      if (user) {
+        alert('Регистрация прошла успешно!');
+        navigate('/');
+      }
+    } catch (error) {
+      if (error.message.includes('email уже существует')) {
+        setErrors(prev => ({
+          ...prev,
+          email: 'Пользователь с таким email уже существует'
+        }));
+      } else {
+        alert('Ошибка при регистрации: ' + error.message);
+      }
     }
   };
 
@@ -112,16 +208,21 @@ const Register = () => {
           LOW.LOW - платформа, который спасает продукты перед сроком, продавая их дешевле
         </p>
         
-        <form onSubmit={handleSubmit} className="register-form">
+        <form onSubmit={handleSubmit} className="register-form" noValidate>
           <div className="input-group">
             <input
               type="text"
               name="nickname"
               value={formData.nickname}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Никнейм"
               required
+              className={touched.nickname && errors.nickname ? 'error' : ''}
             />
+            {touched.nickname && errors.nickname && (
+              <div className="error-message">{errors.nickname}</div>
+            )}
           </div>
           
           <div className="input-group">
@@ -130,9 +231,14 @@ const Register = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Почта"
               required
+              className={touched.email && errors.email ? 'error' : ''}
             />
+            {touched.email && errors.email && (
+              <div className="error-message">{errors.email}</div>
+            )}
           </div>
           
           <div className="input-group">
@@ -141,9 +247,14 @@ const Register = () => {
               name="password"
               value={formData.password}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Пароль"
               required
+              className={touched.password && errors.password ? 'error' : ''}
             />
+            {touched.password && errors.password && (
+              <div className="error-message">{errors.password}</div>
+            )}
           </div>
           
           <div className="input-group">
@@ -152,9 +263,14 @@ const Register = () => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
+              onBlur={handleBlur}
               placeholder="Подтвердите пароль"
               required
+              className={touched.confirmPassword && errors.confirmPassword ? 'error' : ''}
             />
+            {touched.confirmPassword && errors.confirmPassword && (
+              <div className="error-message">{errors.confirmPassword}</div>
+            )}
           </div>
           
           <div className="form-options">
@@ -164,10 +280,14 @@ const Register = () => {
                 name="agreeTerms"
                 checked={formData.agreeTerms}
                 onChange={handleChange}
+                onBlur={handleBlur}
               />
-              <span className="checkmark"></span>
+              <span className={`checkmark ${touched.agreeTerms && errors.agreeTerms ? 'error' : ''}`}></span>
               Я согласен с условиями пользовательского соглашения
             </label>
+            {touched.agreeTerms && errors.agreeTerms && (
+              <div className="error-message checkbox-error">{errors.agreeTerms}</div>
+            )}
           </div>
           
           <button type="submit" className="register-button">
@@ -176,7 +296,7 @@ const Register = () => {
         </form>
         
         <div className="social-login">
-          <button className="google-button">
+          <button type="button" className="google-button">
             <span className="google-icon">G</span>
             Зарегистрироваться через Google
           </button>

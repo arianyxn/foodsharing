@@ -1,3 +1,4 @@
+// src/context/AuthContext.js
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext();
@@ -13,8 +14,31 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
+  const [isInitialized, setIsInitialized] = useState(false); // Добавляем флаг инициализации
 
-  // Готовая компания для демонстрации
+  // Администраторы по умолчанию
+  const defaultAdmins = [
+    {
+      id: 999,
+      nickname: 'Главный Админ',
+      email: 'admin@lowlow.com',
+      password: 'admin123',
+      role: 'admin',
+      isActive: true,
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 998,
+      nickname: 'Администратор',
+      email: 'admin',
+      password: 'admin',
+      role: 'admin', 
+      isActive: true,
+      createdAt: new Date().toISOString()
+    }
+  ];
+
+  // Демо компания
   const defaultCompany = {
     id: 1,
     email: 'okadzaki@example.com',
@@ -29,101 +53,105 @@ export const AuthProvider = ({ children }) => {
     openingTime: '09:00',
     closingTime: '23:00',
     avatar: null,
+    isActive: true,
     createdAt: new Date().toISOString()
   };
 
-  // Функция для инициализации демо-данных
+  // Функция для инициализации данных
   const initializeDemoData = () => {
     const savedUsers = localStorage.getItem('users');
     
     if (!savedUsers) {
-      // Если нет пользователей, создаем демо компанию
-      const initialUsers = [defaultCompany];
+      const initialUsers = [...defaultAdmins, defaultCompany];
       setUsers(initialUsers);
       localStorage.setItem('users', JSON.stringify(initialUsers));
-      console.log('Демо компания создана:', defaultCompany.email);
     } else {
       const parsedUsers = JSON.parse(savedUsers);
       setUsers(parsedUsers);
       
-      // Проверяем, есть ли демо компания
-      const hasDemoCompany = parsedUsers.some(u => u.email === defaultCompany.email);
-      if (!hasDemoCompany) {
-        const updatedUsers = [...parsedUsers, defaultCompany];
+      const updatedUsers = [...parsedUsers];
+      let hasChanges = false;
+      
+      defaultAdmins.forEach(admin => {
+        const hasAdmin = parsedUsers.some(u => u.email === admin.email);
+        if (!hasAdmin) {
+          updatedUsers.push(admin);
+          hasChanges = true;
+        }
+      });
+      
+      if (hasChanges) {
         setUsers(updatedUsers);
         localStorage.setItem('users', JSON.stringify(updatedUsers));
-        console.log('Демо компания добавлена');
       }
     }
   };
 
-  // Функция для обновления данных пользователя (ИСПРАВЛЕННАЯ)
-  const updateUser = (updatedUserData) => {
-    console.log('Обновление пользователя:', updatedUserData);
-    
-    // Сохраняем пользователя в состоянии
-    setUser(updatedUserData);
-    
-    // Сохраняем в localStorage
-    try {
-      localStorage.setItem('currentUser', JSON.stringify(updatedUserData));
-      console.log('Пользователь сохранен в currentUser');
-    } catch (error) {
-      console.warn('Не удалось сохранить currentUser в localStorage:', error);
-      // Если ошибка из-за размера, сохраняем без avatar
-      const userWithoutAvatar = { ...updatedUserData, avatar: null };
-      localStorage.setItem('currentUser', JSON.stringify(userWithoutAvatar));
-    }
-    
-    // Обновляем в списке пользователей
-    setUsers(prevUsers => {
-      const updatedUsers = prevUsers.map(u => 
-        u.id === updatedUserData.id ? updatedUserData : u
-      );
-      
-      // Сохраняем обновленный список пользователей
-      try {
-        localStorage.setItem('users', JSON.stringify(updatedUsers));
-        console.log('Список пользователей обновлен');
-      } catch (error) {
-        console.warn('Не удалось сохранить users в localStorage:', error);
-        // Если ошибка из-за размера, сохраняем без avatar
-        const usersWithoutAvatars = updatedUsers.map(u => ({
-          ...u,
-          avatar: u.avatar && u.avatar.startsWith('data:image') ? null : u.avatar
-        }));
-        localStorage.setItem('users', JSON.stringify(usersWithoutAvatars));
-      }
-      
-      return updatedUsers;
-    });
-    
-    return updatedUserData;
-  };
-
+  // ФУНКЦИЯ РЕГИСТРАЦИИ
   const register = (userData) => {
-    const newUser = {
-      id: Date.now(),
-      ...userData,
-      role: userData.role || 'customer',
-      avatar: null,
-      createdAt: new Date().toISOString()
-    };
-    
-    setUsers(prev => [...prev, newUser]);
-    setUser(newUser);
-    
-    localStorage.setItem('currentUser', JSON.stringify(newUser));
-    localStorage.setItem('users', JSON.stringify([...users, newUser]));
-    
-    return newUser;
+    try {
+      // Проверяем, нет ли уже пользователя с таким email
+      const existingUser = users.find(user => user.email === userData.email);
+      if (existingUser) {
+        throw new Error('Пользователь с таким email уже существует');
+      }
+
+      // Создаем нового пользователя
+      const newUser = {
+        id: Date.now(),
+        nickname: userData.nickname,
+        email: userData.email,
+        password: userData.password,
+        role: 'user',
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        avatar: null,
+        phone: '',
+        city: ''
+      };
+
+      // Обновляем состояние и localStorage
+      const updatedUsers = [...users, newUser];
+      setUsers(updatedUsers);
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
+
+      // Автоматически логиним пользователя после регистрации
+      setUser(newUser);
+      localStorage.setItem('currentUser', JSON.stringify(newUser));
+
+      console.log('Пользователь успешно зарегистрирован:', newUser);
+      return newUser;
+    } catch (error) {
+      console.error('Ошибка регистрации:', error);
+      throw error;
+    }
   };
+
+// В AuthContext.js обновите функцию updateUser
+const updateUser = (updatedUserData) => {
+  console.log('Обновление пользователя:', updatedUserData);
+  
+  const updatedUsers = users.map(u => 
+    u.id === user.id ? { ...u, ...updatedUserData } : u
+  );
+  
+  setUsers(updatedUsers);
+  localStorage.setItem('users', JSON.stringify(updatedUsers));
+  
+  const updatedUser = { ...user, ...updatedUserData };
+  setUser(updatedUser);
+  localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+  
+  console.log('Пользователь успешно обновлен:', updatedUser);
+  return updatedUser;
+};
 
   const login = (email, password) => {
     console.log('Попытка входа:', email);
-    console.log('Доступные пользователи:', users);
     
-    const foundUser = users.find(u => u.email === email && u.password === password);
+    const foundUser = users.find(u => 
+      u.email === email && u.password === password && u.isActive !== false
+    );
     
     if (foundUser) {
       console.log('Пользователь найден:', foundUser);
@@ -141,21 +169,61 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('currentUser');
   };
 
+  // Функции для админ-панели
+  const updateUserStatus = (userId, isActive) => {
+    const updatedUsers = users.map(u => 
+      u.id === userId ? { ...u, isActive } : u
+    );
+    
+    setUsers(updatedUsers);
+    localStorage.setItem('users', JSON.stringify(updatedUsers));
+    
+    if (user && user.id === userId) {
+      const updatedUser = { ...user, isActive };
+      setUser(updatedUser);
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    }
+    
+    return updatedUsers.find(u => u.id === userId);
+  };
+
+  const deleteUser = (userId) => {
+    const updatedUsers = users.filter(u => u.id !== userId);
+    setUsers(updatedUsers);
+    localStorage.setItem('users', JSON.stringify(updatedUsers));
+    
+    if (user && user.id === userId) {
+      logout();
+    }
+    
+    return updatedUsers;
+  };
+
   useEffect(() => {
-    // Инициализируем демо-данные
     initializeDemoData();
     
-    // Загружаем текущего пользователя
+    // Проверяем, есть ли сохраненный пользователь
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       try {
         const userData = JSON.parse(savedUser);
-        setUser(userData);
-        console.log('Пользователь загружен из localStorage:', userData);
+        
+        // Проверяем, существует ли пользователь в системе
+        const userExists = users.some(u => u.id === userData.id && u.email === userData.email);
+        
+        if (userExists) {
+          setUser(userData);
+        } else {
+          // Если пользователь не найден в системе, удаляем из localStorage
+          localStorage.removeItem('currentUser');
+        }
       } catch (error) {
         console.error('Ошибка при загрузке пользователя:', error);
+        localStorage.removeItem('currentUser');
       }
     }
+    
+    setIsInitialized(true); // Помечаем, что инициализация завершена
   }, []);
 
   const value = {
@@ -165,7 +233,10 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     updateUser,
-    isAuthenticated: !!user
+    updateUserStatus,
+    deleteUser,
+    isAuthenticated: !!user,
+    isInitialized // Добавляем в контекст
   };
 
   return (

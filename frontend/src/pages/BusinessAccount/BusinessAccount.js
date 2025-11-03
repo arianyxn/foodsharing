@@ -32,7 +32,7 @@ const BusinessAccount = () => {
     email: '',
     bin: '',
     companyName: '',
-    avatar: '', // ДОБАВЛЕНО поле для аватара
+    avatar: '',
     openingTime: '09:00',
     closingTime: '18:00'
   });
@@ -40,6 +40,7 @@ const BusinessAccount = () => {
   // Загрузка данных при монтировании
   useEffect(() => {
     if (user) {
+      console.log('Загрузка данных пользователя:', user);
       setCompanyData(prev => ({
         ...prev,
         email: user.email || '',
@@ -49,7 +50,7 @@ const BusinessAccount = () => {
         city: user.city || '',
         bin: user.bin || '',
         companyName: user.companyName || '',
-        avatar: user.avatar || '', // ДОБАВЛЕНО загрузка аватара
+        avatar: user.avatar || '',
         openingTime: user.openingTime || '09:00',
         closingTime: user.closingTime || '18:00'
       }));
@@ -120,13 +121,12 @@ const BusinessAccount = () => {
           
           const compressedAvatarUrl = canvas.toDataURL('image/jpeg', 0.7);
           
-          // Сохраняем аватар в companyData
           setCompanyData(prev => ({
             ...prev,
             avatar: compressedAvatarUrl
           }));
 
-          console.log('Аватар загружен и сжат:', compressedAvatarUrl.substring(0, 100) + '...');
+          console.log('Аватар загружен и сжат');
         };
         img.src = e.target.result;
       };
@@ -134,28 +134,73 @@ const BusinessAccount = () => {
     }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     console.log('Сохранение данных компании:', companyData);
     
     // Валидация обязательных полей
-    if (!companyData.companyName || !companyData.bin || !companyData.directorFirstName || 
-        !companyData.email || !companyData.phone || !companyData.city) {
-      alert('Пожалуйста, заполните все обязательные поля (отмечены *)');
+    if (!companyData.companyName?.trim()) {
+      alert('Пожалуйста, укажите название компании');
+      return;
+    }
+    
+    if (!companyData.bin?.trim()) {
+      alert('Пожалуйста, укажите БИН компании');
+      return;
+    }
+    
+    if (!companyData.directorFirstName?.trim()) {
+      alert('Пожалуйста, укажите имя директора');
+      return;
+    }
+    
+    if (!companyData.email?.trim()) {
+      alert('Пожалуйста, укажите email');
+      return;
+    }
+    
+    if (!companyData.phone?.trim()) {
+      alert('Пожалуйста, укажите телефон');
+      return;
+    }
+    
+    if (!companyData.city?.trim()) {
+      alert('Пожалуйста, укажите город');
       return;
     }
 
-    const updatedUser = {
-      ...user,
-      ...companyData
-    };
-    
-    console.log('Обновленный пользователь для сохранения:', updatedUser);
-    
-    updateUser(updatedUser);
-    setShowNotification(false);
-    setIsEditing(false);
-    
-    alert('Данные успешно сохранены!');
+    try {
+      // Подготавливаем данные для обновления
+      const updatedData = {
+        directorFirstName: companyData.directorFirstName,
+        directorLastName: companyData.directorLastName,
+        phone: companyData.phone,
+        city: companyData.city,
+        email: companyData.email,
+        bin: companyData.bin,
+        companyName: companyData.companyName,
+        avatar: companyData.avatar,
+        openingTime: companyData.openingTime,
+        closingTime: companyData.closingTime
+      };
+
+      console.log('Отправка данных для обновления:', updatedData);
+      
+      // Вызываем updateUser из контекста
+      const result = updateUser(updatedData);
+      
+      if (result) {
+        console.log('Данные успешно сохранены:', result);
+        setShowNotification(false);
+        setIsEditing(false);
+        alert('Данные успешно сохранены!');
+      } else {
+        throw new Error('Ошибка при сохранении данных');
+      }
+      
+    } catch (error) {
+      console.error('Ошибка при сохранении:', error);
+      alert('Произошла ошибка при сохранении данных. Пожалуйста, попробуйте еще раз.');
+    }
   };
 
   const handleCancel = () => {
@@ -168,7 +213,7 @@ const BusinessAccount = () => {
         email: user.email || '',
         bin: user.bin || '',
         companyName: user.companyName || '',
-        avatar: user.avatar || '', // ДОБАВЛЕНО восстановление аватара
+        avatar: user.avatar || '',
         openingTime: user.openingTime || '09:00',
         closingTime: user.closingTime || '18:00'
       });
@@ -264,6 +309,17 @@ const BusinessAccount = () => {
         );
     }
   };
+
+  // Проверка роли пользователя
+  if (!user || user.role !== 'business') {
+    return (
+      <div className="access-denied">
+        <h2>Доступ запрещен</h2>
+        <p>Эта страница доступна только для бизнес-аккаунтов.</p>
+        <button onClick={() => navigate('/')}>На главную</button>
+      </div>
+    );
+  }
 
   return (
     <div className="business-account-page">

@@ -143,7 +143,7 @@
   padding: 8px;
 }
 
-/* Сетка ресторанов - МИНИМАЛИСТИЧНЫЙ ДИЗАЙН */
+/* Сетка ресторанов */
 .restaurants-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -189,7 +189,7 @@
   transform: scale(1.05);
 }
 
-/* Бейдж рейтинга - ПРОСТО И МИНИМАЛИСТИЧНО */
+/* Бейдж рейтинга */
 .rating-badge {
   position: absolute;
   top: 12px;
@@ -207,7 +207,22 @@
   backdrop-filter: blur(10px);
 }
 
-/* Информация о ресторане - ЧИСТО И ПРОСТО */
+/* Бейдж "Ваш ресторан" */
+.own-restaurant-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  z-index: 2;
+}
+
+/* Информация о ресторане */
 .restaurant-info {
   padding: 20px;
   flex-grow: 1;
@@ -235,7 +250,7 @@
   text-align: left;
 }
 
-/* Мета информация - МИНИМАЛИСТИЧНО */
+/* Мета информация */
 .restaurant-meta {
   display: flex;
   justify-content: space-between;
@@ -267,7 +282,7 @@
   margin: 0;
 }
 
-/* Кнопка маршрута - БЕЛАЯ И МИНИМАЛИСТИЧНАЯ */
+/* Кнопка маршрута */
 .route-button {
   background: transparent;
   color: #fff;
@@ -344,6 +359,107 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Диалоговое окно авторизации */
+.auth-dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.auth-dialog {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 0;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: dialogAppear 0.3s ease-out;
+}
+
+@keyframes dialogAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.auth-dialog-content {
+  padding: 30px;
+  text-align: center;
+}
+
+.auth-dialog-content h3 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  color: #000;
+  margin: 0 0 15px 0;
+}
+
+.auth-dialog-content p {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 25px 0;
+  line-height: 1.5;
+}
+
+.auth-dialog-actions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.auth-cancel-btn {
+  background: rgba(0, 0, 0, 0.1);
+  color: #000;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.auth-cancel-btn:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.auth-confirm-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+}
+
+.auth-confirm-btn:hover {
+  background: #333;
+  transform: translateY(-1px);
 }
 
 /* Адаптивность */

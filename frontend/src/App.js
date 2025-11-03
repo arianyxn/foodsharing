@@ -1,3 +1,6 @@
+
+
+// src/App.js
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './App.css';
@@ -13,10 +16,13 @@ import Footer from './components/Footer';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
 import Account from './pages/Account/Account';
-import BusinessAccount from './pages/BusinessAccount/BusinessAccount'; // Добавляем импорт
+import BusinessAccount from './pages/BusinessAccount/BusinessAccount';
 import AllNews from './pages/AllNews/AllNews';
 import Restaurants from './pages/Restaurants/Restaurants';
+import RestaurantDetail from './pages/RestaurantDetail/RestaurantDetail';
+import ForgotPassword from './pages/ForgotPassword/ForgotPassword';
 import { AuthProvider } from './context/AuthContext';
+import AdminPanel from './pages/AdminPanel/AdminPanel';
 
 function App() {
   return (
@@ -56,6 +62,15 @@ function App() {
               </>
             } />
             
+            {/* Детальная страница ресторана */}
+            <Route path="/restaurant/:id" element={
+              <>
+                <Navbar />
+                <RestaurantDetail />
+                <Footer />
+              </>
+            } />
+            
             {/* Страница всех новостей */}
             <Route path="/all-news" element={
               <>
@@ -71,7 +86,10 @@ function App() {
             {/* Страница регистрации БЕЗ навбара и футера */}
             <Route path="/register" element={<Register />} />
             
-            {/* Страница личного кабинета покупателя */}
+            {/* Страница восстановления пароля БЕЗ навбара и футера */}
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            
+            {/* Страница личного кабинета покупателя - ТОЛЬКО ДЛЯ ОБЫЧНЫХ ПОЛЬЗОВАТЕЛЕЙ */}
             <Route path="/account" element={
               <>
                 <Navbar />
@@ -80,12 +98,20 @@ function App() {
               </>
             } />
             
-            {/* Страница бизнес-аккаунта */}
+            {/* Страница бизнес-аккаунта - ТОЛЬКО ДЛЯ БИЗНЕС-ПОЛЬЗОВАТЕЛЕЙ */}
             <Route path="/business-account" element={
               <>
                 <Navbar />
                 <BusinessAccount />
                 <Footer />
+              </>
+            } />
+
+            {/* Админ-панель - ТОЛЬКО ДЛЯ АДМИНИСТРАТОРОВ */}
+            <Route path="/admin" element={
+              <>
+                <Navbar />
+                <AdminPanel />
               </>
             } />
           </Routes>

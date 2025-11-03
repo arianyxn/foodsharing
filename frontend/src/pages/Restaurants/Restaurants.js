@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import './Restaurants.css';
 
@@ -9,11 +10,13 @@ import headerImage2 from '../../assets/images/header-food2.jpg';
 
 const Restaurants = () => {
   const { users, user: currentUser } = useAuth();
+  const navigate = useNavigate();
   const [companies, setCompanies] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [sortBy, setSortBy] = useState('distance');
   const [cityFilter, setCityFilter] = useState('all');
   const [loading, setLoading] = useState(true);
+  const [showAuthDialog, setShowAuthDialog] = useState(false);
 
   useEffect(() => {
     loadCompaniesFromDB();
@@ -274,7 +277,8 @@ const Restaurants = () => {
   };
 
   // Открытие маршрута в Яндекс Картах
-  const openYandexRoute = (company) => {
+  const openYandexRoute = (company, e) => {
+    e.stopPropagation(); // Останавливаем всплытие события
     try {
       if (!userLocation || !company.coordinates) {
         // Если нет координат, открываем поиск по названию и городу
@@ -295,6 +299,25 @@ const Restaurants = () => {
       const searchQuery = encodeURIComponent(`${company.companyName} ${company.city}`);
       window.open(`https://yandex.ru/maps/10335/kazakhstan/search/${searchQuery}`, '_blank');
     }
+  };
+
+  // Переход на детальную страницу ресторана с проверкой авторизации
+  const handleRestaurantClick = (company) => {
+    if (!currentUser) {
+      setShowAuthDialog(true);
+      return;
+    }
+    navigate(`/restaurant/${company.id}`);
+  };
+
+  // Обработка авторизации
+  const handleAuthConfirm = () => {
+    setShowAuthDialog(false);
+    navigate('/login');
+  };
+
+  const handleAuthCancel = () => {
+    setShowAuthDialog(false);
   };
 
   // Сортировка компаний
@@ -424,7 +447,11 @@ const Restaurants = () => {
               const isOwnCompany = isCurrentUserCompany(company);
               
               return (
-                <div key={company.id} className="restaurant-card">
+                <div 
+                  key={company.id} 
+                  className="restaurant-card"
+                  onClick={() => handleRestaurantClick(company)}
+                >
                   <div className="restaurant-image">
                     <img 
                       src={getCompanyImage(company)} 
@@ -437,17 +464,7 @@ const Restaurants = () => {
                       ⭐ {typeof company.rating === 'number' ? company.rating.toFixed(1) : '4.5'}
                     </div>
                     {isOwnCompany && (
-                      <div style={{
-                        position: 'absolute',
-                        top: '12px',
-                        right: '12px',
-                        background: 'rgba(0, 0, 0, 0.8)',
-                        color: '#fff',
-                        padding: '4px 8px',
-                        borderRadius: '8px',
-                        fontSize: '12px',
-                        fontWeight: '500'
-                      }}>
+                      <div className="own-restaurant-badge">
                         Ваш ресторан
                       </div>
                     )}
@@ -463,7 +480,7 @@ const Restaurants = () => {
                       {!isOwnCompany && (
                         <button 
                           className="route-button"
-                          onClick={() => openYandexRoute(company)}
+                          onClick={(e) => openYandexRoute(company, e)}
                           title="Построить маршрут в Яндекс Картах"
                         >
                           Маршрут
@@ -477,6 +494,32 @@ const Restaurants = () => {
           )}
         </div>
       </div>
+
+      {/* Диалоговое окно авторизации */}
+      {showAuthDialog && (
+        <div className="auth-dialog-overlay">
+          <div className="auth-dialog">
+            <div className="auth-dialog-content">
+              <h3>Требуется вход в систему</h3>
+              <p>Чтобы просмотреть меню ресторана, необходимо войти в систему</p>
+              <div className="auth-dialog-actions">
+                <button 
+                  className="auth-cancel-btn"
+                  onClick={handleAuthCancel}
+                >
+                  Отмена
+                </button>
+                <button 
+                  className="auth-confirm-btn"
+                  onClick={handleAuthConfirm}
+                >
+                  Войти
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 };

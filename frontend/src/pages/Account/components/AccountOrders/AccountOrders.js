@@ -1,7 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AccountOrders.css';
 
 const AccountOrders = () => {
+  const navigate = useNavigate();
+
+  const handleBrowseProducts = () => {
+    navigate('/restaurants');
+  };
+
   return (
     <div className="account-section">
       <h2 className="section-title">Мои заказы</h2>
@@ -16,7 +23,7 @@ const AccountOrders = () => {
           </div>
           <h3>У вас пока нет заказов</h3>
           <p>После оформления заказа вы сможете отслеживать его статус здесь</p>
-          <button className="browse-products-btn">
+          <button className="browse-products-btn" onClick={handleBrowseProducts}>
             Перейти к каталогу
           </button>
         </div>

@@ -1,3 +1,4 @@
+// src/pages/Login/Login.js
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -44,7 +45,9 @@ const Login = () => {
     e.preventDefault();
     const user = login(formData.email, formData.password);
     if (user) {
-      navigate('/'); // Возвращаем на главную после успешного входа
+      console.log('Пользователь вошел:', user.role, user);
+      // ВСЕХ перекидываем на главную страницу
+      navigate('/');
     } else {
       alert('Неверный email или пароль');
     }
@@ -59,9 +62,7 @@ const Login = () => {
       {/* Контейнер формы */}
       <div className="form-container">
         <h1 className="login-title">Войти</h1>
-        <p className="login-subtitle">
-          Войдите, чтобы получить доступ к своей учетной записи
-        </p>
+       
         
         <form onSubmit={handleSubmit} className="login-form">
           <div className="input-group">
@@ -103,9 +104,9 @@ const Login = () => {
               <span className="checkmark"></span>
               Запомни меня
             </label>
-            <a href="/forgot-password" className="forgot-password">
+            <Link to="/forgot-password" className="forgot-password">
               Забыли пароль?
-            </a>
+            </Link>
           </div>
           
           <button type="submit" className="login-button">
