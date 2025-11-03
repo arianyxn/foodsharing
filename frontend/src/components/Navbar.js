@@ -64,11 +64,11 @@ const Navbar = () => {
       if (section) {
         section.scrollIntoView({ 
           behavior: 'smooth',
-            block: 'start'
-          });
-        }
+          block: 'start'
+        });
       }
-    };
+    }
+  };
 
   const handleLoginClick = () => {
     navigate('/login');
@@ -126,7 +126,11 @@ const Navbar = () => {
   const handleLogout = () => {
     logout();
     setIsDropdownOpen(false);
-    navigate('/');
+    
+    // После выхода редиректим на главную
+    if (location.pathname === '/admin') {
+      navigate('/');
+    }
   };
 
   const toggleDropdown = () => {

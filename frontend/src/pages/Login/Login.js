@@ -46,8 +46,13 @@ const Login = () => {
     const user = login(formData.email, formData.password);
     if (user) {
       console.log('Пользователь вошел:', user.role, user);
-      // ВСЕХ перекидываем на главную страницу
-      navigate('/');
+      
+      // РЕДИРЕКТ В ЗАВИСИМОСТИ ОТ РОЛИ
+      if (user.role === 'admin') {
+        navigate('/admin'); // Админа на админ-панель
+      } else {
+        navigate('/'); // Остальных на главную
+      }
     } else {
       alert('Неверный email или пароль');
     }
