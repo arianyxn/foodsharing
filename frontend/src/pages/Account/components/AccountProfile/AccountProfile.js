@@ -1,5 +1,5 @@
 // src/pages/Account/components/AccountProfile/AccountProfile.js
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useAuth } from '../../../../context/AuthContext';
 import './AccountProfile.css';
 
@@ -7,15 +7,31 @@ const AccountProfile = () => {
   const { user, updateUser, uploadAvatar } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState({
-    firstName: user?.nickname || '',
-    email: user?.email || '',
-    phone: user?.phone || '',
-    city: user?.city || '',
-    avatar: user?.avatar || null
+    firstName: '',
+    email: '',
+    phone: '',
+    city: '',
+    avatar: null
   });
   const fileInputRef = useRef(null);
 
   const cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Тараз', 'Павлодар', 'Усть-Каменогорск', 'Семей'];
+
+  // Инициализация данных при загрузке
+  useEffect(() => {
+    if (user) {
+      console.log('User data:', user);
+      console.log('User avatar:', user.avatar);
+      
+      setUserData({
+        firstName: user.nickname || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        city: user.city || '',
+        avatar: user.avatar || null
+      });
+    }
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -35,15 +51,19 @@ const AccountProfile = () => {
     const file = event.target.files[0];
     if (!file) return;
 
+    console.log('Selected file:', file);
+
     try {
-      await uploadAvatar(user.id, file);
-      
-      // Обновляем локальное состояние
+      // Сначала показываем превью
       const reader = new FileReader();
       reader.onload = (e) => {
+        console.log('File preview loaded');
         setUserData(prev => ({ ...prev, avatar: e.target.result }));
       };
       reader.readAsDataURL(file);
+
+      // Затем загружаем на сервер
+      await uploadAvatar(user.id, file);
       
       alert('Аватар успешно обновлен!');
     } catch (error) {
@@ -93,6 +113,12 @@ const AccountProfile = () => {
     setIsEditing(false);
   };
 
+  // Получаем отображаемый аватар
+  const displayAvatar = userData.avatar || user?.avatar;
+
+  console.log('Display avatar:', displayAvatar);
+  console.log('Is editing:', isEditing);
+
   return (
     <div className="account-section">
       <div className="section-header">
@@ -113,8 +139,15 @@ const AccountProfile = () => {
           onClick={handleAvatarClick}
         >
           <div className="user-avatar-upload">
-            {userData.avatar ? (
-              <img src={userData.avatar} alt="Avatar" />
+            {displayAvatar ? (
+              <img 
+                src={displayAvatar} 
+                alt="Avatar" 
+                onError={(e) => {
+                  console.error('Error loading avatar image');
+                  e.target.style.display = 'none';
+                }}
+              />
             ) : (
               <div className="avatar-placeholder-upload">
                 {userData.firstName ? userData.firstName.charAt(0).toUpperCase() : 

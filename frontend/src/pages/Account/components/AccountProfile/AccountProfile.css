@@ -204,7 +204,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 40px;
 }
 
 .avatar-upload-container {
@@ -228,7 +228,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 3px solid rgba(255, 255, 255, 0.2);
+  border: 3px solid rgba(255, 255, 255, 0.3);
   position: relative;
 }
 
@@ -236,7 +236,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: all 0.3s ease;
+  display: block;
 }
 
 .avatar-placeholder-upload {
@@ -250,7 +250,6 @@
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
   font-size: 48px;
-  transition: all 0.3s ease;
 }
 
 .avatar-overlay {
@@ -289,14 +288,7 @@
   padding: 0 10px;
 }
 
-/* Убедимся, что аватарка всегда видна, даже без наведения */
-.avatar-upload-container:not(.editable) .user-avatar-upload,
-.avatar-upload-container.editable .user-avatar-upload {
-  /* Аватарка всегда видна */
-  opacity: 1;
-  visibility: visible;
-}
-
+/* ДОБАВЛЕННЫЕ СТИЛИ ДЛЯ ВИДИМОСТИ КАК В БИЗНЕС-АККАУНТЕ */
 .avatar-upload-container.editable:hover .user-avatar-upload {
   transform: scale(1.05);
   border-color: rgba(255, 255, 255, 0.4);
