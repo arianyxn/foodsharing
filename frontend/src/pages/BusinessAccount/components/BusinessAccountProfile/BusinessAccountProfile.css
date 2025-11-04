@@ -240,7 +240,6 @@
   transition: all 0.3s ease;
 }
 
-/* Улучшенный плейсхолдер */
 .business-avatar-placeholder {
   width: 100%;
   height: 100%;
@@ -255,7 +254,6 @@
   transition: all 0.3s ease;
 }
 
-/* Улучшенный оверлей */
 .avatar-overlay {
   position: absolute;
   top: 0;
@@ -292,7 +290,6 @@
   padding: 0 10px;
 }
 
-/* Анимация при наведении */
 .avatar-upload-container.editable:hover .business-avatar-upload {
   transform: scale(1.05);
   border-color: rgba(255, 255, 255, 0.4);
@@ -311,7 +308,6 @@
   text-align: center;
 }
 
-/* Новые стили для часов работы */
 .working-hours-container {
   display: flex;
   align-items: center;

@@ -1,32 +1,105 @@
+// src/pages/Account/components/BusinessAccountProfile/BusinessAccountProfile.js
 import React, { useRef, useState } from 'react';
+import { useAuth } from '../../../../context/AuthContext';
 import './BusinessAccountProfile.css';
 
-const BusinessAccountProfile = ({ 
-  user, 
-  companyData, 
-  isEditing, 
-  setIsEditing, 
-  onInputChange, 
-  onAvatarClick, 
-  onFileChange, 
-  onSave, 
-  onCancel,
-  fileInputRef 
-}) => {
-  const cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Тараз', 'Павлодар', 'Усть-Каменогорск', 'Семей'];
-  const [showTimePicker, setShowTimePicker] = useState(false);
+const BusinessAccountProfile = () => {
+  const { user, updateUser, uploadAvatar } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [companyData, setCompanyData] = useState({
+    companyName: user?.companyName || '',
+    bin: user?.bin || '',
+    directorFirstName: user?.directorFirstName || '',
+    directorLastName: user?.directorLastName || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    city: user?.city || '',
+    openingTime: user?.openingTime || '09:00',
+    closingTime: user?.closingTime || '23:00',
+    avatar: user?.avatar || null
+  });
+  const fileInputRef = useRef(null);
 
-  // Отладочная информация
-  console.log('BusinessAccountProfile - companyData avatar:', companyData?.avatar);
-  console.log('BusinessAccountProfile - user avatar:', user?.avatar);
+  const cities = ['Алматы', 'Астана', 'Шымкент', 'Караганда', 'Актобе', 'Тараз', 'Павлодар', 'Усть-Каменогорск', 'Семей'];
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCompanyData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleAvatarClick = () => {
+    if (isEditing && fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    try {
+      await uploadAvatar(user.id, file);
+      
+      // Обновляем локальное состояние
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setCompanyData(prev => ({ ...prev, avatar: e.target.result }));
+      };
+      reader.readAsDataURL(file);
+      
+      alert('Логотип успешно обновлен!');
+    } catch (error) {
+      console.error('Ошибка загрузки логотипа:', error);
+      alert(error.message || 'Ошибка при загрузке логотипа');
+    }
+  };
 
   const handleTimeChange = (type, value) => {
-    onInputChange({
-      target: {
-        name: type === 'open' ? 'openingTime' : 'closingTime',
-        value: value
+    setCompanyData(prev => ({
+      ...prev,
+      [type === 'open' ? 'openingTime' : 'closingTime']: value
+    }));
+  };
+
+  const handleSave = async () => {
+    try {
+      // Проверяем обязательные поля
+      if (!companyData.companyName || !companyData.email || !companyData.bin || !companyData.directorFirstName || !companyData.phone || !companyData.city) {
+        alert('Пожалуйста, заполните все обязательные поля (отмечены *)');
+        return;
       }
+
+      // Обновляем пользователя
+      await updateUser(user.id, companyData);
+      
+      // Показываем сообщение об успехе
+      alert('Данные компании успешно сохранены!');
+      setIsEditing(false);
+      
+    } catch (error) {
+      console.error('Ошибка при сохранении:', error);
+      alert(error.message || 'Произошла ошибка при сохранении данных');
+    }
+  };
+
+  const handleCancel = () => {
+    // Восстанавливаем исходные данные
+    setCompanyData({
+      companyName: user?.companyName || '',
+      bin: user?.bin || '',
+      directorFirstName: user?.directorFirstName || '',
+      directorLastName: user?.directorLastName || '',
+      email: user?.email || '',
+      phone: user?.phone || '',
+      city: user?.city || '',
+      openingTime: user?.openingTime || '09:00',
+      closingTime: user?.closingTime || '23:00',
+      avatar: user?.avatar || null
     });
+    setIsEditing(false);
   };
 
   const TimePicker = ({ type, value, onChange }) => (
@@ -67,21 +140,14 @@ const BusinessAccountProfile = ({
       <div className="avatar-upload-section">
         <div 
           className={`avatar-upload-container ${isEditing ? 'editable' : ''}`}
-          onClick={onAvatarClick}
+          onClick={handleAvatarClick}
         >
           <div className="business-avatar-upload">
-            {companyData?.avatar ? (
-              <img 
-                src={companyData.avatar} 
-                alt="Business Logo" 
-                onError={(e) => {
-                  console.log('Ошибка загрузки аватара');
-                  e.target.style.display = 'none';
-                }}
-              />
+            {companyData.avatar ? (
+              <img src={companyData.avatar} alt="Business Logo" />
             ) : (
               <div className="business-avatar-placeholder">
-                {companyData?.companyName ? companyData.companyName.charAt(0).toUpperCase() : 'B'}
+                {companyData.companyName ? companyData.companyName.charAt(0).toUpperCase() : 'B'}
               </div>
             )}
           </div>
@@ -89,7 +155,7 @@ const BusinessAccountProfile = ({
             <div className="avatar-overlay">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 21.4142C3.21071 21.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M16 5L19 8M20.5 3.5C20.8978 3.10217 21.4374 2.87868 22 2.87868C22.5626 2.87868 23.1022 3.10217 23.5 3.5C23.8978 3.89782 24.1213 4.43739 24.1213 5C24.1213 5.56261 23.8978 6.10217 23.5 6.5L12 15L8 16L9 12L20.5 3.5Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M16 5L19 8M20.5 3.5C20.8978 3.10217 21.4374 2.87868 22 2.87868C22.5626 2.87868 23.1022 3.10217 23.5 3.5C23.8978 3.89782 24.1213 4.43739 24.1213 5C24.1213 5.56261 23.8978 6.10217 23.5 6.5L12 15L10 17L11 13L20.5 3.5Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
               <span>Сменить логотип</span>
             </div>
@@ -98,7 +164,7 @@ const BusinessAccountProfile = ({
         <input
           type="file"
           ref={fileInputRef}
-          onChange={onFileChange}
+          onChange={handleFileChange}
           accept="image/*"
           style={{ display: 'none' }}
         />
@@ -115,7 +181,7 @@ const BusinessAccountProfile = ({
             type="text"
             name="companyName"
             value={companyData.companyName}
-            onChange={onInputChange}
+            onChange={handleInputChange}
             className="form-input"
             placeholder="Введите название компании"
             disabled={!isEditing}
@@ -128,7 +194,7 @@ const BusinessAccountProfile = ({
             type="text"
             name="bin"
             value={companyData.bin}
-            onChange={onInputChange}
+            onChange={handleInputChange}
             className="form-input"
             placeholder="Введите БИН компании"
             disabled={!isEditing}
@@ -142,7 +208,7 @@ const BusinessAccountProfile = ({
             type="text"
             name="directorFirstName"
             value={companyData.directorFirstName}
-            onChange={onInputChange}
+            onChange={handleInputChange}
             className="form-input"
             placeholder="Введите имя руководителя"
             disabled={!isEditing}
@@ -155,7 +221,7 @@ const BusinessAccountProfile = ({
             type="text"
             name="directorLastName"
             value={companyData.directorLastName}
-            onChange={onInputChange}
+            onChange={handleInputChange}
             className="form-input"
             placeholder="Введите фамилию руководителя"
             disabled={!isEditing}
@@ -169,7 +235,7 @@ const BusinessAccountProfile = ({
             type="email"
             name="email"
             value={companyData.email}
-            onChange={onInputChange}
+            onChange={handleInputChange}
             className="form-input"
             placeholder="Введите email компании"
             disabled={!isEditing}
@@ -182,7 +248,7 @@ const BusinessAccountProfile = ({
             type="tel"
             name="phone"
             value={companyData.phone}
-            onChange={onInputChange}
+            onChange={handleInputChange}
             className="form-input"
             placeholder="+7 (XXX) XXX-XX-XX"
             disabled={!isEditing}
@@ -197,7 +263,7 @@ const BusinessAccountProfile = ({
           <select
             name="city"
             value={companyData.city}
-            onChange={onInputChange}
+            onChange={handleInputChange}
             className="form-input select-input"
             disabled={!isEditing}
           >
@@ -234,10 +300,10 @@ const BusinessAccountProfile = ({
       
       {isEditing && (
         <div className="save-button-container">
-          <button className="save-btn" onClick={onSave}>
+          <button className="save-btn" onClick={handleSave}>
             Сохранить изменения
           </button>
-          <button className="cancel-btn" onClick={onCancel}>
+          <button className="cancel-btn" onClick={handleCancel}>
             Отмена
           </button>
         </div>

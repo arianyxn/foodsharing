@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Администраторы по умолчанию
+  // Только администраторы по умолчанию
   const defaultAdmins = [
     {
       id: 999,
@@ -27,7 +27,10 @@ export const AuthProvider = ({ children }) => {
       role: 'admin',
       isActive: true,
       balance: 0,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      avatar: null,
+      phone: '',
+      city: ''
     },
     {
       id: 998,
@@ -37,51 +40,14 @@ export const AuthProvider = ({ children }) => {
       role: 'admin', 
       isActive: true,
       balance: 0,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      avatar: null,
+      phone: '',
+      city: ''
     }
   ];
 
-  // Демо компании
-  const defaultCompanies = [
-    {
-      id: 1,
-      email: 'okadzaki@example.com',
-      password: 'okadzaki123',
-      role: 'business',
-      companyName: 'Okadzaki Sushi',
-      bin: '123456789012',
-      directorFirstName: 'Айгерім',
-      directorLastName: 'Қасенова',
-      phone: '+7 (777) 123-45-67',
-      city: 'Астана',
-      openingTime: '09:00',
-      closingTime: '23:00',
-      avatar: null,
-      isActive: true,
-      balance: 0,
-      createdAt: new Date().toISOString()
-    },
-    {
-      id: 2,
-      email: 'sf@example.com',
-      password: 'sf123456',
-      role: 'business',
-      companyName: 'SF Abaya',
-      bin: '120000000876',
-      directorFirstName: 'Жанбол',
-      directorLastName: 'Ержанулу',
-      phone: '+7 (700) 123-90-67',
-      city: 'Астана',
-      openingTime: '09:00',
-      closingTime: '23:00',
-      avatar: null,
-      isActive: true,
-      balance: 0,
-      createdAt: new Date().toISOString()
-    }
-  ];
-
-  // УБИРАЕМ ДЕМО ЗАКАЗЫ - оставляем пустой массив
+  // Пустой массив заказов
   const demoOrders = [];
 
   // Функция для инициализации данных
@@ -89,19 +55,19 @@ export const AuthProvider = ({ children }) => {
     const savedUsers = localStorage.getItem('users');
     const savedOrders = localStorage.getItem('orders');
     
-    // Инициализация пользователей
+    // Инициализация пользователей - ТОЛЬКО АДМИНЫ
     if (!savedUsers) {
-      const initialUsers = [...defaultAdmins, ...defaultCompanies];
+      const initialUsers = [...defaultAdmins]; // Только админы, без компаний
       setUsers(initialUsers);
       localStorage.setItem('users', JSON.stringify(initialUsers));
-      console.log('Демо пользователи созданы:', initialUsers);
+      console.log('Администраторы созданы:', initialUsers);
     } else {
       const parsedUsers = JSON.parse(savedUsers);
       setUsers(parsedUsers);
       console.log('Пользователи загружены из localStorage:', parsedUsers);
     }
 
-    // Инициализация заказов - ТОЛЬКО ЕСЛИ НЕТ СОХРАНЕННЫХ
+    // Инициализация заказов
     if (!savedOrders) {
       setOrders(demoOrders);
       localStorage.setItem('orders', JSON.stringify(demoOrders));
@@ -111,7 +77,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // ФУНКЦИЯ РЕГИСТРАЦИИ
+  // ФУНКЦИЯ РЕГИСТРАЦИИ ОБЫЧНЫХ ПОЛЬЗОВАТЕЛЕЙ
   const register = (userData) => {
     try {
       // Проверяем, нет ли уже пользователя с таким email
@@ -152,23 +118,141 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Функция обновления пользователя
-  const updateUser = (updatedUserData) => {
-    console.log('Обновление пользователя:', updatedUserData);
+  // ФУНКЦИЯ СОЗДАНИЯ БИЗНЕС-ПОЛЬЗОВАТЕЛЯ (для админ-панели)
+  const createBusinessUser = (userData) => {
+    try {
+      // Проверяем, нет ли уже пользователя с таким email
+      const existingUser = users.find(user => user.email === userData.email);
+      if (existingUser) {
+        throw new Error('Пользователь с таким email уже существует');
+      }
+
+      // Создаем нового бизнес-пользователя
+      const newUser = {
+        id: Date.now(),
+        nickname: userData.companyName,
+        email: userData.email,
+        password: userData.password,
+        role: 'business',
+        companyName: userData.companyName,
+        bin: userData.bin || '',
+        directorFirstName: userData.directorFirstName || '',
+        directorLastName: userData.directorLastName || '',
+        phone: userData.phone || '',
+        city: userData.city || '',
+        openingTime: userData.openingTime || '09:00',
+        closingTime: userData.closingTime || '23:00',
+        isActive: true,
+        balance: 0,
+        createdAt: new Date().toISOString(),
+        avatar: null
+      };
+
+      // Обновляем состояние и localStorage
+      const updatedUsers = [...users, newUser];
+      setUsers(updatedUsers);
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
+
+      console.log('Бизнес-пользователь успешно создан:', newUser);
+      return newUser;
+    } catch (error) {
+      console.error('Ошибка создания бизнес-пользователя:', error);
+      throw error;
+    }
+  };
+
+  // Функция обновления пользователя - ИСПРАВЛЕННАЯ
+  const updateUser = (userId, updatedUserData) => {
+    console.log('Обновление пользователя:', userId, updatedUserData);
     
-    const updatedUsers = users.map(u => 
-      u.id === user.id ? { ...u, ...updatedUserData } : u
-    );
+    try {
+      const updatedUsers = users.map(u => 
+        u.id === userId ? { ...u, ...updatedUserData } : u
+      );
+      
+      setUsers(updatedUsers);
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      
+      // Если обновляем текущего пользователя, обновляем и его состояние
+      if (user && user.id === userId) {
+        const updatedUser = { ...user, ...updatedUserData };
+        setUser(updatedUser);
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      }
+      
+      console.log('Пользователь успешно обновлен');
+      return updatedUsers.find(u => u.id === userId);
+    } catch (error) {
+      console.error('Ошибка при обновлении пользователя:', error);
+      throw new Error('Произошла ошибка при сохранении данных');
+    }
+  };
+
+  // Функция загрузки аватара - НОВАЯ ФУНКЦИЯ
+  const uploadAvatar = (userId, file) => {
+    return new Promise((resolve, reject) => {
+      if (!file) {
+        reject(new Error('Файл не выбран'));
+        return;
+      }
+
+      // Проверяем размер файла (максимум 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        reject(new Error('Размер файла не должен превышать 5MB'));
+        return;
+      }
+
+      // Проверяем тип файла
+      if (!file.type.startsWith('image/')) {
+        reject(new Error('Пожалуйста, выберите изображение'));
+        return;
+      }
+
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        try {
+          const avatarUrl = e.target.result;
+          updateUserAvatar(userId, avatarUrl);
+          resolve(avatarUrl);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      
+      reader.onerror = () => {
+        reject(new Error('Ошибка чтения файла'));
+      };
+      
+      reader.readAsDataURL(file);
+    });
+  };
+
+  // Функция обновления аватара
+  const updateUserAvatar = (userId, avatarUrl) => {
+    console.log('Обновление аватара:', userId, avatarUrl);
     
-    setUsers(updatedUsers);
-    localStorage.setItem('users', JSON.stringify(updatedUsers));
-    
-    const updatedUser = { ...user, ...updatedUserData };
-    setUser(updatedUser);
-    localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-    
-    console.log('Пользователь успешно обновлен:', updatedUser);
-    return updatedUser;
+    try {
+      const updatedUsers = users.map(u => 
+        u.id === userId ? { ...u, avatar: avatarUrl } : u
+      );
+      
+      setUsers(updatedUsers);
+      localStorage.setItem('users', JSON.stringify(updatedUsers));
+      
+      // Если обновляем текущего пользователя, обновляем и его состояние
+      if (user && user.id === userId) {
+        const updatedUser = { ...user, avatar: avatarUrl };
+        setUser(updatedUser);
+        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      }
+      
+      console.log('Аватар успешно обновлен');
+      return updatedUsers.find(u => u.id === userId);
+    } catch (error) {
+      console.error('Ошибка при обновлении аватара:', error);
+      throw new Error('Ошибка при загрузке аватара');
+    }
   };
 
   // Функция входа
@@ -195,7 +279,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('currentUser');
   };
 
-  // ФУНКЦИЯ СОЗДАНИЯ ЗАКАЗА (ИСПРАВЛЕННАЯ)
+  // ФУНКЦИЯ СОЗДАНИЯ ЗАКАЗА
   const createOrder = (orderData) => {
     try {
       console.log('Создание заказа:', orderData);
@@ -393,6 +477,25 @@ export const AuthProvider = ({ children }) => {
     return orders;
   };
 
+  // Получение всех продуктов (для админа)
+  const getAllProducts = () => {
+    const allProducts = [];
+    const businessUsers = users.filter(user => user.role === 'business');
+    
+    businessUsers.forEach(company => {
+      const companyProducts = JSON.parse(localStorage.getItem(`products_${company.id}`)) || [];
+      companyProducts.forEach(product => {
+        allProducts.push({
+          ...product,
+          companyName: company.companyName,
+          companyId: company.id
+        });
+      });
+    });
+    
+    return allProducts;
+  };
+
   useEffect(() => {
     initializeDemoData();
     
@@ -403,13 +506,17 @@ export const AuthProvider = ({ children }) => {
         const userData = JSON.parse(savedUser);
         
         // Проверяем, существует ли пользователь в системе
-        const userExists = users.some(u => u.id === userData.id && u.email === userData.email);
-        
-        if (userExists) {
-          setUser(userData);
-        } else {
-          // Если пользователь не найден в системе, удаляем из localStorage
-          localStorage.removeItem('currentUser');
+        const savedUsers = localStorage.getItem('users');
+        if (savedUsers) {
+          const allUsers = JSON.parse(savedUsers);
+          const userExists = allUsers.some(u => u.id === userData.id && u.email === userData.email);
+          
+          if (userExists) {
+            setUser(userData);
+          } else {
+            // Если пользователь не найден в системе, удаляем из localStorage
+            localStorage.removeItem('currentUser');
+          }
         }
       } catch (error) {
         console.error('Ошибка при загрузке пользователя:', error);
@@ -428,6 +535,8 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     updateUser,
+    updateUserAvatar,
+    uploadAvatar, // Новая функция
     updateUserStatus,
     deleteUser,
     createOrder,
@@ -435,7 +544,9 @@ export const AuthProvider = ({ children }) => {
     getCompanyOrders,
     getUserOrders,
     getAllOrders,
+    getAllProducts,
     updateUserBalance,
+    createBusinessUser,
     isAuthenticated: !!user,
     isInitialized
   };
